@@ -1,11 +1,13 @@
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <div>
+    <div className="flex min-h-screen flex-col">
       <Header />
-      <div className="h-80 w-full bg-gray-100 p-15">
+
+      <div className="h-60 w-full flex-shrink-0 bg-gray-100 px-15 py-6">
         <h1 className="h-20 w-100 font-bold">
           Encontre profissionais de confiança
           <br />
@@ -29,6 +31,17 @@ export default function Home() {
           vontade.
         </p>
         <Button className="cursor-pointer">Ver profissionais</Button>
+      </div>
+
+      <p className="mt-10 ml-20">Principais Categorias</p>
+      <div className="flex h-70 w-full flex-shrink-0 justify-around gap-5 bg-white p-15">
+        <p className="border-radius-2 border-4 p-4">Barbearia</p>
+        <p className="border-radius-2 border-4 p-4">Consultoria Financeira</p>
+        <p className="border-radius-2 border-4 p-4">Saúde</p>
+      </div>
+
+      <div className="mt-auto">
+        <Footer />
       </div>
     </div>
   );
