@@ -1,6 +1,14 @@
+"use client"
+
 import React from "react";
+import { Instagram, Linkedin } from 'lucide-react';
+
 
 function Footer() {
+
+  const currentYear = new Date().getFullYear(
+
+  )
   return (
     <div className="w-full bg-gray-100 px-10 py-6 text-gray-800">
       <div className="flex justify-between">
@@ -12,8 +20,8 @@ function Footer() {
             possam se sentir à vontade.
           </p>
           <div className="flex gap-2">
-            <p>Icone do Instagram</p>
-            <p>Icone do Linkedin</p>
+            <Instagram />
+            <Linkedin />
           </div>
         </div>
 
@@ -36,11 +44,12 @@ function Footer() {
       <hr />
       <div className="flex-collunm text-center">
         <p className="text-[12px]">
-          @copy re-exista. Todos os diretiros reservados.
+           © {currentYear} re-exista. Todos os diretiros reservados.
         </p>
         <p className="text-[12px]">
           Feito com <em className="text-red-500">♥</em> por Santiago Oliveira
         </p>
+        <a href="https://www.flaticon.com/free-icons/medical-doctor" title="medical doctor icons" className="text-[12px]">Icons created by Freepik - Flaticon</a>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -34,10 +36,59 @@ export default function Home() {
       </div>
 
       <p className="mt-10 ml-20">Principais Categorias</p>
-      <div className="flex h-70 w-full flex-shrink-0 justify-around gap-5 bg-white p-15">
-        <p className="border-radius-2 border-4 p-4">Barbearia</p>
-        <p className="border-radius-2 border-4 p-4">Consultoria Financeira</p>
-        <p className="border-radius-2 border-4 p-4">Saúde</p>
+      <div className="flex h-50 w-full flex-shrink-0 justify-around gap-5 bg-white p-15">
+      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
+      <Link href="/">
+        <Image
+          src="/barber.svg"
+          alt="logo da página - re-exista"
+          width={40}
+          height={10}
+        />
+      </Link>
+      </p>
+      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
+      <Link href="/">
+        <Image
+          src="/financial.svg"
+          alt="logo da página - re-exista"
+          width={40}
+          height={10}
+        />
+      </Link>
+      </p>
+      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
+      <Link href="/">
+        <Image
+          src="/medical-team.svg"
+          alt="logo da página - re-exista"
+          width={40}
+          height={10}
+        />
+      </Link>
+      </p>
+      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
+      <Link href="/">
+        <Image
+          src="/tattoo-studio.svg"
+          alt="logo da página - re-exista"
+          width={40}
+          height={10}
+        />
+      </Link>
+      </p>
+      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
+      <Link href="/">
+        <Image
+          src="/application.svg"
+          alt="logo da página - re-exista"
+          width={40}
+          height={10}
+        />
+      </Link>
+      </p>
+        
+       
       </div>
 
       <div className="mt-auto">
