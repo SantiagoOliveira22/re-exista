@@ -2,6 +2,8 @@
 
 import React from "react";
 import { Instagram, Linkedin } from 'lucide-react';
+import Link from "next/link";
+import Image from "next/image";
 
 
 function Footer() {
@@ -20,8 +22,23 @@ function Footer() {
             possam se sentir à vontade.
           </p>
           <div className="flex gap-2">
-            <Instagram />
-            <Linkedin />
+            
+      <Link  href="/" className="mt-2">
+        <Image
+          src="/instagram.svg"
+          alt="instagram"
+          width={35}
+          height={20}
+        />
+      </Link>
+      <Link  href="/" className="mt-2">
+        <Image
+          src="/linkedin.svg"
+          alt="linkedin"
+          width={35}
+          height={20}
+        />
+      </Link>
           </div>
         </div>
 
@@ -46,10 +63,12 @@ function Footer() {
         <p className="text-[12px]">
            © {currentYear} re-exista. Todos os diretiros reservados.
         </p>
+        <Link  href="/" className="mt-2">
         <p className="text-[12px]">
           Feito com <em className="text-red-500">♥</em> por Santiago Oliveira
         </p>
-        <a href="https://www.flaticon.com/free-icons/medical-doctor" title="medical doctor icons" className="text-[12px]">Icons created by Freepik - Flaticon</a>
+      </Link>
+
       </div>
     </div>
   );

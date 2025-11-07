@@ -35,58 +35,60 @@ export default function Home() {
         <Button className="cursor-pointer">Ver profissionais</Button>
       </div>
 
+
+{/* Categorias */}
+
       <p className="mt-10 ml-20">Principais Categorias</p>
-      <div className="flex h-50 w-full flex-shrink-0 justify-around gap-5 bg-white p-15">
-      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
-      <Link href="/">
+      <div className="flex h-70 w-full flex-shrink-0 justify-around bg-white p-15">
+     
+      <Link  href="/"
+      className="flex-col justify-center align-items text-xs text-center rounded-lg border-2 p-4 w-32 h-[100px] border-violet-400 hover:border-violet-800 transition-colors">
+    
         <Image
           src="/barber.svg"
-          alt="logo da página - re-exista"
+          alt="ícone de barbearia"
           width={40}
-          height={10}
+          height={40}
+          className="mx-auto"
         />
+        <p className="mt-2">Barbearia</p>
       </Link>
-      </p>
-      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
-      <Link href="/">
+  
+      <Link  href="/"
+      className="flex-col justify-items-center text-xs text-center rounded-lg border-2 p-4 w-32 h-[100px] border-violet-400 hover:border-violet-800 transition-colors">
         <Image
           src="/financial.svg"
-          alt="logo da página - re-exista"
+          alt="Ícone consultoria financeira"
           width={40}
           height={10}
         />
+        <p className="mt-1">Consultoria <br /> Financeira</p>
       </Link>
-      </p>
-      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
-      <Link href="/">
+    
+      <Link  href="/"
+      className="flex-col justify-items-center text-xs text-center rounded-lg border-2 p-4 w-32 h-[100px] border-violet-400 hover:border-violet-800 transition-colors">
         <Image
-          src="/medical-team.svg"
-          alt="logo da página - re-exista"
+          src="/health.svg"
+          alt="ìcone Saúde"
           width={40}
           height={10}
         />
+        <p className="mt-2">Saúde</p>
       </Link>
-      </p>
-      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
-      <Link href="/">
+      
+
+      <Link  href="/"
+      className="flex-col justify-items-center text-xs text-center rounded-lg border-2 p-4 w-32 h-[100px] border-violet-400 hover:border-violet-800 transition-colors">
         <Image
-          src="/tattoo-studio.svg"
-          alt="logo da página - re-exista"
+          src="/services.svg"
+          alt="Ícone Outros Serviços"
           width={40}
           height={10}
         />
+        <p className="mt-2">Outros Serviços</p>
       </Link>
-      </p>
-      <p className="rounded-lg border-2 p-4 border-violet-400 transition-colors hover:border-violet-800">
-      <Link href="/">
-        <Image
-          src="/application.svg"
-          alt="logo da página - re-exista"
-          width={40}
-          height={10}
-        />
-      </Link>
-      </p>
+      
+      
         
        
       </div>

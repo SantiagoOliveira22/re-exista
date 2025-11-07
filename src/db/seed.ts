@@ -15,7 +15,6 @@ const categories = [
   { name: "Barbearia" },
   { name: "Consultoria Financeira" },
   { name: "Saúde" },
-  { name: "Tatuagem" },
   { name: "Outros Serviços" },
 ];
 
@@ -764,23 +763,6 @@ const professionals = [
     description: "Barbearia especializada.",
   },
 
-  // Tatuagem
-  {
-    categoryName: "Tatuagem",
-    name: "Bruna Negre",
-    pronoun: "Ela/dela",
-    specialty: "Tatuagem",
-    address: "",
-    city: "Porto Alegre",
-    state: "RS",
-    format: "Presencial",
-    contactPhone: "(51) 98988-7160",
-    contactEmail: "negrescotattoo@gmail.com",
-    agreements: [],
-    description:
-      "Faço tatuagens autorais e exclusivas, em preto, com variação de traço, muita textura e carinho.",
-  },
-
   // Consultoria Financeira
   {
     categoryName: "Consultoria Financeira",
@@ -814,6 +796,22 @@ const professionals = [
   },
 
   // Outros Serviços
+    // Tatuagem
+  {
+    categoryName: "Outros Serviços",
+    name: "Bruna Negre",
+    pronoun: "Ela/dela",
+    specialty: "Tatuagem",
+    address: "",
+    city: "Porto Alegre",
+    state: "RS",
+    format: "Presencial",
+    contactPhone: "(51) 98988-7160",
+    contactEmail: "negrescotattoo@gmail.com",
+    agreements: [],
+    description:
+      "Faço tatuagens autorais e exclusivas, em preto, com variação de traço, muita textura e carinho.",
+  },
   {
     categoryName: "Outros Serviços",
     name: "HTA Resistência",
