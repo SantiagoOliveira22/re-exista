@@ -43,7 +43,13 @@ function Footer() {
         </div>
 
         <div className="text-[12px]">
-          <p>Categorias</p>
+        <p>Categorias:</p>
+          <ul>
+            <li className="px-2">Barbearia</li>
+            <li className="px-2">Consultoria Financeira</li>
+            <li className="px-2">Saúde</li>
+            <li className="px-2">Outros Serviços</li>
+          </ul>
         </div>
 
         <div className="text-[12px]">

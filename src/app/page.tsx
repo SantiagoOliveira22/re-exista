@@ -1,13 +1,12 @@
-import Header from "@/components/Header";
+
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
+
 
       <div className="h-60 w-full flex-shrink-0 bg-gray-100 px-15 py-6">
         <h1 className="h-20 w-100 font-bold">
@@ -87,14 +86,6 @@ export default function Home() {
         />
         <p className="mt-2">Outros Serviços</p>
       </Link>
-      
-      
-        
-       
-      </div>
-
-      <div className="mt-auto">
-        <Footer />
       </div>
     </div>
   );
