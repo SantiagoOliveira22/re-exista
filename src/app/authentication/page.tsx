@@ -27,10 +27,10 @@ const Authentication = async () => {
             <TabsTrigger value="sign-in">Entrar</TabsTrigger>
             <TabsTrigger value="sign-up">Criar conta</TabsTrigger>
           </TabsList>
-          <TabsContent value="sign-in">
+          <TabsContent value="sign-in" className="w-full">
             <SignInForm />
           </TabsContent>
-          <TabsContent value="sign-up">
+          <TabsContent value="sign-up" className="w-full">
             <SignUpForm />
           </TabsContent>
         </Tabs>

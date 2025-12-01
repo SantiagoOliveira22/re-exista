@@ -74,7 +74,7 @@ const SignInForm = () => {
 
     return (
     <>
-      <Card className="w-80">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Entrar</CardTitle>
           <CardDescription>Faça login para continuar.</CardDescription>
@@ -82,7 +82,7 @@ const SignInForm = () => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <CardContent className="grid gap-6">
+            <CardContent className="grid gap-6 w-full">
               <FormField
                 control={form.control}
                 name="email"
