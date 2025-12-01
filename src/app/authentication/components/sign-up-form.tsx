@@ -26,15 +26,15 @@ import { authClient } from "@/lib/auth-client";
 
 const formSchema = z
   .object({
-    name: z.string().trim().min(1, "Nome é obrigatório!"),
+    name: z.string().trim().min(1, "Nome é obrigatório"),
     email: z.string().email("E-mail inválido"),
-    password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres!"),
+    password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
     passwordConfirmation: z
       .string()
-      .min(8, "Senha deve ter no mínimo 8 caracteres!"),
+      .min(8, "Senha deve ter no mínimo 8 caracteres"),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
-    message: "As senhas não coincidem!",
+    message: "As senhas não coincidem",
     path: ["passwordConfirmation"],
   });
 
@@ -65,8 +65,8 @@ const SignUpForm = () => {
         onError: (error) => {
           if (error.error.code === "USER_ALREADY_EXISTS") {
             toast.error("E-mail já cadastrado!");
-            form.setError("email", {
-              message: "E-mail já cadastrado!",
+            return form.setError("email", {
+              message: "E-mail já cadastrado",
             });
           }
           toast.error(error.error.message)

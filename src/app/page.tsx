@@ -32,60 +32,60 @@ export default function Home() {
       </div>
 
       {/* Categorias */}
-  <div>
-      <p className="mt-20 ml-20">Principais Categorias</p>
-      <div className="flex w-full flex-shrink-0 justify-around bg-white p-15">
-        <Link
-          href="/"
-          className="align-items h-[100px] w-32 flex-col justify-center rounded-lg border-2 border-violet-400 p-4 text-center text-xs transition-colors hover:border-violet-800"
-        >
-          <Image
-            src="/barber.svg"
-            alt="ícone de barbearia"
-            width={40}
-            height={40}
-            className="mx-auto"
-          />
-          <p className="mt-2">Barbearia</p>
-        </Link>
+      <div>
+        <p className="mt-20 ml-20">Principais Categorias</p>
+        <div className="flex w-full flex-shrink-0 justify-around bg-white p-15">
+          <Link
+            href="/"
+            className="align-items h-[100px] w-32 flex-col justify-center rounded-lg border-2 border-violet-400 p-4 text-center text-xs transition-colors hover:border-violet-800"
+          >
+            <Image
+              src="/barber.svg"
+              alt="ícone de barbearia"
+              width={40}
+              height={40}
+              className="mx-auto"
+            />
+            <p className="mt-2">Barbearia</p>
+          </Link>
 
-        <Link
-          href="/"
-          className="h-[100px] w-32 flex-col justify-items-center rounded-lg border-2 border-violet-400 p-4 text-center text-xs transition-colors hover:border-violet-800"
-        >
-          <Image
-            src="/financial.svg"
-            alt="Ícone consultoria financeira"
-            width={40}
-            height={10}
-          />
-          <p className="mt-1">
-            Consultoria <br /> Financeira
-          </p>
-        </Link>
+          <Link
+            href="/"
+            className="h-[100px] w-32 flex-col justify-items-center rounded-lg border-2 border-violet-400 p-4 text-center text-xs transition-colors hover:border-violet-800"
+          >
+            <Image
+              src="/financial.svg"
+              alt="Ícone consultoria financeira"
+              width={40}
+              height={10}
+            />
+            <p className="mt-1">
+              Consultoria <br /> Financeira
+            </p>
+          </Link>
 
-        <Link
-          href="/"
-          className="h-[100px] w-32 flex-col justify-items-center rounded-lg border-2 border-violet-400 p-4 text-center text-xs transition-colors hover:border-violet-800"
-        >
-          <Image src="/health.svg" alt="ìcone Saúde" width={40} height={10} />
-          <p className="mt-2">Saúde</p>
-        </Link>
+          <Link
+            href="/"
+            className="h-[100px] w-32 flex-col justify-items-center rounded-lg border-2 border-violet-400 p-4 text-center text-xs transition-colors hover:border-violet-800"
+          >
+            <Image src="/health.svg" alt="ìcone Saúde" width={40} height={10} />
+            <p className="mt-2">Saúde</p>
+          </Link>
 
-        <Link
-          href="/"
-          className="h-[100px] w-32 flex-col justify-items-center rounded-lg border-2 border-violet-400 p-4 text-center text-xs transition-colors hover:border-violet-800"
-        >
-          <Image
-            src="/services.svg"
-            alt="Ícone Outros Serviços"
-            width={40}
-            height={10}
-          />
-          <p className="mt-2">Outros Serviços</p>
-        </Link>
+          <Link
+            href="/"
+            className="h-[100px] w-32 flex-col justify-items-center rounded-lg border-2 border-violet-400 p-4 text-center text-xs transition-colors hover:border-violet-800"
+          >
+            <Image
+              src="/services.svg"
+              alt="Ícone Outros Serviços"
+              width={40}
+              height={10}
+            />
+            <p className="mt-2">Outros Serviços</p>
+          </Link>
+        </div>
       </div>
     </div>
-  </div>
   );
 }
