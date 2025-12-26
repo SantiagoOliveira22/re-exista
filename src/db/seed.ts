@@ -1,7 +1,8 @@
 import crypto from "crypto";
 
 import { db } from ".";
-import { categoryTable, professionalTable } from "./schema";
+import { categoryTable, professionalTable, userTable } from "./schema";
+import { eq } from "drizzle-orm";
 
 function generateSlug(name: string): string {
   return name
@@ -796,7 +797,7 @@ const professionals = [
   },
 
   // Outros Serviços
-    // Tatuagem
+  // Tatuagem
   {
     categoryName: "Outros Serviços",
     name: "Bruna Negre",
@@ -868,6 +869,27 @@ async function main() {
     await db.delete(categoryTable);
     console.log("✅ Dados limpos com sucesso!");
 
+    // Criar ou obter usuário de teste para os profissionais
+    const testUserId = "seed-user-id";
+    const existingUser = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.id, testUserId))
+      .limit(1);
+
+    if (existingUser.length === 0) {
+      console.log("👤 Criando usuário de teste...");
+      await db.insert(userTable).values({
+        id: testUserId,
+        name: "Usuário de Teste (Seed)",
+        email: `seed-${Date.now()}@test.com`,
+        emailVerified: false,
+      });
+      console.log("✅ Usuário de teste criado!");
+    } else {
+      console.log("✅ Usuário de teste já existe!");
+    }
+
     // Inserir categorias primeiro
     const categoryMap = new Map<string, string>();
 
@@ -888,43 +910,114 @@ async function main() {
     }
 
     // Inserir profissionais
+    console.log(
+      `📝 Iniciando inserção de ${professionals.length} profissionais...`,
+    );
+    let professionalsCreated = 0;
+    let professionalsFailed = 0;
+
     for (const professionalData of professionals) {
-      const professionalId = crypto.randomUUID();
-      const professionalSlug = generateSlug(professionalData.name);
-      const categoryId = categoryMap.get(professionalData.categoryName);
+      try {
+        // Validar campos obrigatórios
+        if (!professionalData.name || !professionalData.name.trim()) {
+          console.error(`❌ Erro: Nome não pode estar vazio para profissional`);
+          professionalsFailed++;
+          continue;
+        }
 
-      if (!categoryId) {
-        throw new Error(
-          `Categoria "${professionalData.categoryName}" não encontrada`,
+        if (!professionalData.city || !professionalData.city.trim()) {
+          console.error(
+            `❌ Erro: Cidade não pode estar vazia para "${professionalData.name}"`,
+          );
+          professionalsFailed++;
+          continue;
+        }
+
+        const professionalId = crypto.randomUUID();
+        const professionalSlug = generateSlug(professionalData.name);
+        const categoryId = categoryMap.get(professionalData.categoryName);
+
+        if (!categoryId) {
+          console.error(
+            `❌ Erro: Categoria "${professionalData.categoryName}" não encontrada para "${professionalData.name}"`,
+          );
+          professionalsFailed++;
+          continue;
+        }
+
+        console.log(`👤 Criando profissional: ${professionalData.name}`);
+
+        await db.insert(professionalTable).values({
+          id: professionalId,
+          userId: testUserId,
+          name: professionalData.name.trim(),
+          slug: professionalSlug,
+          pronoun:
+            professionalData.pronoun && professionalData.pronoun.trim()
+              ? professionalData.pronoun.trim()
+              : null,
+          specialty:
+            professionalData.specialty && professionalData.specialty.trim()
+              ? professionalData.specialty.trim()
+              : null,
+          address:
+            professionalData.address && professionalData.address.trim()
+              ? professionalData.address.trim()
+              : null,
+          city: professionalData.city.trim(),
+          state:
+            professionalData.state && professionalData.state.trim()
+              ? professionalData.state.trim()
+              : null,
+          format:
+            professionalData.format && professionalData.format.trim()
+              ? professionalData.format.trim()
+              : null,
+          contactPhone:
+            professionalData.contactPhone &&
+            professionalData.contactPhone.trim()
+              ? professionalData.contactPhone.trim()
+              : null,
+          contactEmail:
+            professionalData.contactEmail &&
+            professionalData.contactEmail.trim()
+              ? professionalData.contactEmail.trim()
+              : null,
+          agreements: professionalData.agreements
+            ? JSON.stringify(professionalData.agreements)
+            : null,
+          description:
+            professionalData.description && professionalData.description.trim()
+              ? professionalData.description.trim()
+              : null,
+          categoryId: categoryId,
+        });
+
+        professionalsCreated++;
+        console.log(`  ✅ Profissional criado com sucesso!`);
+      } catch (error: any) {
+        console.error(
+          `❌ Erro ao criar profissional "${professionalData.name}":`,
         );
+        console.error(`   Detalhes:`, error?.message || error);
+        if (error?.code) {
+          console.error(`   Código do erro:`, error.code);
+        }
+        professionalsFailed++;
+        // Continue com o próximo profissional ao invés de parar tudo
       }
-
-      console.log(`👤 Criando profissional: ${professionalData.name}`);
-
-      await db.insert(professionalTable).values({
-        id: professionalId,
-        name: professionalData.name,
-        slug: professionalSlug,
-        pronoun: professionalData.pronoun,
-        specialty: professionalData.specialty,
-        address: professionalData.address,
-        city: professionalData.city,
-        state: professionalData.state,
-        format: professionalData.format,
-        contactPhone: professionalData.contactPhone,
-        contactEmail: professionalData.contactEmail,
-        agreements: JSON.stringify(professionalData.agreements),
-        description: professionalData.description,
-        categoryId: categoryId,
-      });
     }
 
-    console.log("✅ Seeding concluído com sucesso!");
+    console.log("\n✅ Seeding concluído!");
     console.log(
-      `📊 Foram criadas ${categories.length} categorias e ${
-        professionals.length
-      } profissionais.`,
+      `📊 Resumo: ${categories.length} categorias criadas, ${professionalsCreated} profissionais criados, ${professionalsFailed} falharam.`,
     );
+
+    if (professionalsFailed > 0) {
+      console.warn(
+        `⚠️  Atenção: ${professionalsFailed} profissionais não puderam ser criados. Verifique os erros acima.`,
+      );
+    }
   } catch (error) {
     console.error("❌ Erro durante o seeding:", error);
     throw error;

@@ -1,17 +1,5 @@
-import { AppWindowIcon, CodeIcon } from "lucide-react"
 import SignInForm from "./components/sign-in-form"
 import SignUpForm from "./components/sign-up-form"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Tabs,
   TabsContent,

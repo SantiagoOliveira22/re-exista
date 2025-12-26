@@ -69,15 +69,18 @@ export const categoryRelations = relations(categoryTable, ({ many }) => ({
 
 export const professionalTable = pgTable("professional", {
   id: uuid().primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" }),
   categoryId: uuid("category_id")
     .notNull()
-    .references(() => categoryTable.id, {onDelete: 'set null'}),
+    .references(() => categoryTable.id, { onDelete: "set null" }),
   name: text().notNull(),
   slug: text().notNull().unique(),
   //imageUrl: text("image_url").notNull(),
   pronoun: text(),
   specialty: text(),
-  address: text().notNull(),
+  address: text(),
   city: text().notNull(),
   state: text(),
   format: text(),
