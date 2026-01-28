@@ -5,8 +5,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ProfessionalForm from "./_components/form";
 
-import ProfessionalForm from "./components/form";
+
 
 const ProfessionalFormPage = () => {
   return (

@@ -33,7 +33,7 @@ const professionals = [
     format: "Presencial",
     contactPhone: "",
     contactEmail: "",
-    agreements: [],
+    agreements: undefined,
     description:
       "Pedir encaminhamento pela UBS da sua cidade. Fila grande, média de 2 anos de espera pra primeira consulta. Tem hormonização e cirurgias (mastectomia, histerectomia, colpectomia). Até agora não tem cirurgia genital para homens trans.",
   },
@@ -983,9 +983,12 @@ async function main() {
             professionalData.contactEmail.trim()
               ? professionalData.contactEmail.trim()
               : null,
-          agreements: professionalData.agreements
-            ? JSON.stringify(professionalData.agreements)
-            : null,
+          agreements:
+            professionalData.agreements &&
+            Array.isArray(professionalData.agreements) &&
+            professionalData.agreements.length > 0
+              ? JSON.stringify(professionalData.agreements)
+              : null,
           description:
             professionalData.description && professionalData.description.trim()
               ? professionalData.description.trim()
@@ -995,12 +998,14 @@ async function main() {
 
         professionalsCreated++;
         console.log(`  ✅ Profissional criado com sucesso!`);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(
           `❌ Erro ao criar profissional "${professionalData.name}":`,
         );
-        console.error(`   Detalhes:`, error?.message || error);
-        if (error?.code) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        console.error(`   Detalhes:`, errorMessage);
+        if (error && typeof error === 'object' && 'code' in error) {
           console.error(`   Código do erro:`, error.code);
         }
         professionalsFailed++;
