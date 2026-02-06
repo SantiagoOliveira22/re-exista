@@ -1,11 +1,11 @@
 import { db } from '@/db';
 import { professionalTable } from '@/db/schema';
-import { count, eq, and, sql, ilike, or } from 'drizzle-orm';
-import { MapPin } from 'lucide-react';
+import { count, eq, and, sql, ilike } from 'drizzle-orm';
 import Link from 'next/link';
 import React from 'react';
 import { Filters } from './_components/filters';
 import { SearchBar } from './_components/search-bar';
+import { ProfessionalCard } from './_components/professional-card';
 import { getCategories } from '@/actions/get-categories';
 import { getUniqueStates, getUniqueCities, getUniqueHealthPlans } from '@/actions/get-filter-data';
 
@@ -70,12 +70,7 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
   if (params.search) {
     const searchTerm = `%${params.search}%`;
     conditions.push(
-      or(
-        ilike(professionalTable.name, searchTerm),
-        ilike(professionalTable.specialty, searchTerm),
-        ilike(professionalTable.description, searchTerm),
-        ilike(professionalTable.city, searchTerm)
-      )!
+      ilike(professionalTable.name, searchTerm)
     );
   }
 
@@ -125,7 +120,7 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
         {/* Layout: Sidebar à esquerda e conteúdo principal à direita */}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar de Filtros */}
-          <aside className="w-full lg:w-64 flex-shrink-0">
+          <aside className="w-full lg:w-80 flex-shrink-0 bg-gray-100 p-4 rounded-lg">
             <Filters
               categories={categories}
               states={states}
@@ -151,103 +146,10 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
               </span>
             )}
             {professionals.map(
-              (professional: typeof professionalTable.$inferSelect) => {
-                // Gera as iniciais (primeiro nome e primeiro sobrenome) de forma padronizada
-                const getInitials = (name?: string) => {
-                  if (!name) return '';
-                  const parts = name.trim().split(' ').filter(Boolean);
-                  if (parts.length === 1) {
-                    return parts[0][0]?.toUpperCase() || '';
-                  }
-                  return (
-                    (parts[0][0]?.toUpperCase() || '') +
-                    (parts[1][0]?.toUpperCase() || '')
-                  );
-                };
-                return (
-                  <div
-                    key={professional.id}
-                    className="bg-white rounded-lg border border-muted p-4 flex flex-col gap-3 shadow-sm"
-                  >
-                    <div className="flex items-center gap-3">
-                      {/* Círculo de iniciais sempre do mesmo tamanho, centralizado e com fonte adequada */}
-                      <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center font-bold text-primary text-lg border-2 border-primary select-none flex-shrink-0">
-                        {getInitials(professional.name)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-base text-foreground">
-                            {professional.name}
-                          </span>
-                          {professional.pronoun && (
-                            <span className="text-xs bg-accent text-foreground px-2 py-0.5 rounded font-medium">
-                              {professional.pronoun}
-                            </span>
-                          )}
-                        </div>
-                        {professional.specialty && (
-                          <span className="inline-block text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded mt-1">
-                            {professional.specialty}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {!!professional.city && !!professional.state && (
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="w-3 h-3 text-red-500" />
-                        <span>{professional.city}/{professional.state}</span>
-                      </div>
-                    )}
-                    
-                    <div className="flex flex-wrap items-center gap-2">
-                      {professional.format && (
-                        <span className="text-xs bg-background text-muted-foreground border rounded px-2 py-0.5">
-                          {professional.format}
-                        </span>
-                      )}
-                      {professional.format === 'Online' && (
-                        <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
-                          Online
-                        </span>
-                      )}
-                      {(() => {
-                        if (!professional.agreements) return null;
-                        try {
-                          const agreementsArray = JSON.parse(professional.agreements);
-                          if (
-                            Array.isArray(agreementsArray) &&
-                            agreementsArray.length > 0
-                          ) {
-                            return agreementsArray.map((agreement: string, idx: number) => (
-                              <span
-                                key={idx}
-                                className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded"
-                              >
-                                {agreement}
-                              </span>
-                            ));
-                          }
-                        } catch {
-                          // Se não for JSON válido, não mostra nada
-                        }
-                        return null;
-                      })()}
-                    </div>
-                    
-                    {professional.description && (
-                      <div className="text-xs text-muted-foreground line-clamp-2">
-                        {professional.description}
-                      </div>
-                    )}
-                    
-                    <button className="mt-auto bg-pink-500 hover:bg-pink-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors">
-                      Ver Detalhes
-                    </button>
-                  </div>
-                );
-              }
-              )}
+              (professional: typeof professionalTable.$inferSelect) => (
+                <ProfessionalCard key={professional.id} professional={professional} />
+              )
+            )}
             </div>
             
             {/* Controles de Paginação */}
@@ -318,3 +220,4 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
 };
 
 export default ProfessionalList;
+

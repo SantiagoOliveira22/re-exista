@@ -28,7 +28,9 @@ export default function Home() {
           profissionais e empresas de qualquer área com quem possam se sentir à
           vontade.
         </p>
-        <Button className="cursor-pointer">Ver profissionais</Button>
+        <Link href="/professionalList">
+          <Button className="cursor-pointer">Ver profissionais</Button>
+        </Link>
       </div>
 
       {/* Categorias */}

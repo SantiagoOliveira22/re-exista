@@ -42,7 +42,7 @@ function Header() {
           Home
         </Link>
         <Link
-          href="/profissionais"
+          href="/professionalList"
           className="text-white transition-colors hover:text-gray-200"
         >
           Profissionais
