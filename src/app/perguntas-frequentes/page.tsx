@@ -48,7 +48,7 @@ const faqData = [
 
 export default function PerguntasFrequentes() {
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4">
+    <div className="min-h-screen bg-white py-12 px-4 pb-20 sm:pb-24 md:pb-28">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -61,7 +61,7 @@ export default function PerguntasFrequentes() {
         </div>
 
         {/* FAQ Accordion */}
-        <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
+        <div className="bg-gray-50 rounded-lg shadow-sm p-6 md:p-8 mb-8">
           <Accordion type="single" collapsible defaultValue="1" className="w-full">
             {faqData.map((faq) => (
               <AccordionItem

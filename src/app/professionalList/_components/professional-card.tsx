@@ -34,7 +34,7 @@ export function ProfessionalCard({ professional }: ProfessionalCardProps) {
                     firstPart === 'dr.' || firstPart === 'dra.';
     
     if (isTitle && parts.length > 2) {
-      // Retorna título + primeiro nome + segundo nome (ex: "Dr Santiago Silva")
+      // Retorna título + primeiro nome + segundo nome (ex: "Dr Santiago Oliveira")
       return `${parts[0]} ${parts[1]} ${parts[2]}`;
     } else if (isTitle && parts.length > 1) {
       // Se tiver apenas título + primeiro nome

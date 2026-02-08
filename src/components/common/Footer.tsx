@@ -1,75 +1,168 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { getCategories } from "@/actions/get-categories";
 
-function Footer() {
+async function Footer() {
   const currentYear = new Date().getFullYear();
+  const categories = await getCategories();
+  
+  // Buscar IDs das categorias principais
+  const barbeariaCategory = categories.find(cat => cat.name === "Barbearia");
+  const consultoriaFinanceiraCategory = categories.find(cat => cat.name === "Consultoria Financeira");
+  const saudeCategory = categories.find(cat => cat.name === "Saúde");
+  const outrosServicosCategory = categories.find(cat => cat.name === "Outros Serviços");
+
   return (
-    <div className="w-full bg-gray-100 px-10 py-6 text-gray-800">
-      <div className="flex justify-between">
-        <div>
-          <p className="text-[12px]">Re-exista</p>
-          <p className="text-[10px]">
-            Somos um Portal de Indicação pensado na comunidade e <br /> pessoas
-            que buscam profissionais e empresas de qualquer área <br /> com quem
-            possam se sentir à vontade.
-          </p>
-          <div className="flex gap-2">
-            <Link href="/" className="mt-2">
-              <Image
-                src="/instagram.svg"
-                alt="instagram"
-                width={35}
-                height={20}
-              />
-            </Link>
-            <Link href="/" className="mt-2">
-              <Image
-                src="/linkedin.svg"
-                alt="linkedin"
-                width={35}
-                height={20}
-              />
-            </Link>
+    <footer className="w-full border-t-4 border-gray-300 bg-gray-100 text-gray-800 shadow-[0_-2px_8px_rgba(0,0,0,0.05)]">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-10 xl:gap-x-12">
+          {/* Sobre */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold sm:text-base">Re-exista</h3>
+            <p className="text-xs leading-relaxed text-gray-700 sm:text-sm md:text-base">
+              Somos um Portal de Indicação pensado na comunidade e pessoas que
+              buscam profissionais e empresas de qualquer área com quem possam
+              se sentir à vontade.
+            </p>
+            <div className="flex gap-3">
+              <Link
+                href="/"
+                className="transition-opacity hover:opacity-70"
+                aria-label="Instagram"
+              >
+                <Image
+                  src="/instagram.svg"
+                  alt="Instagram"
+                  width={35}
+                  height={20}
+                  className="h-5 w-auto sm:h-6"
+                />
+              </Link>
+              <Link
+                href="/"
+                className="transition-opacity hover:opacity-70"
+                aria-label="LinkedIn"
+              >
+                <Image
+                  src="/linkedin.svg"
+                  alt="LinkedIn"
+                  width={35}
+                  height={20}
+                  className="h-5 w-auto sm:h-6"
+                />
+              </Link>
+            </div>
+          </div>
+
+          {/* Categorias */}
+          <div className="space-y-3 lg:ml-12 xl:ml-16">
+            <h3 className="text-sm font-semibold sm:text-base">Categorias</h3>
+            <ul className="space-y-2 pl-2 text-xs sm:text-sm">
+              <li>
+                <Link
+                  href={barbeariaCategory ? `/professionalList?category=${barbeariaCategory.id}` : "/professionalList"}
+                  className="text-gray-700 transition-colors hover:text-gray-900"
+                >
+                  Barbearia
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={consultoriaFinanceiraCategory ? `/professionalList?category=${consultoriaFinanceiraCategory.id}` : "/professionalList"}
+                  className="text-gray-700 transition-colors hover:text-gray-900"
+                >
+                  Consultoria Financeira
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={saudeCategory ? `/professionalList?category=${saudeCategory.id}` : "/professionalList"}
+                  className="text-gray-700 transition-colors hover:text-gray-900"
+                >
+                  Saúde
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={outrosServicosCategory ? `/professionalList?category=${outrosServicosCategory.id}` : "/professionalList"}
+                  className="text-gray-700 transition-colors hover:text-gray-900"
+                >
+                  Outros Serviços
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Recursos */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold sm:text-base">Recursos</h3>
+            <ul className="space-y-2 pl-2 text-xs sm:text-sm">
+              <li>
+                <Link
+                  href="/perguntas-frequentes"
+                  className="text-gray-700 transition-colors hover:text-gray-900"
+                >
+                  Perguntas Frequentes
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold sm:text-base">Legal</h3>
+            <ul className="space-y-2 pl-2 text-xs sm:text-sm">
+              <li>
+                <Link
+                  href="/termos-de-uso"
+                  className="text-gray-700 transition-colors hover:text-gray-900"
+                >
+                  Termos de Uso
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/politica-de-privacidade"
+                  className="text-gray-700 transition-colors hover:text-gray-900"
+                >
+                  Política de Privacidade
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contato"
+                  className="text-gray-700 transition-colors hover:text-gray-900"
+                >
+                  Contato
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <div className="text-[12px]">
-          <p>Categorias:</p>
-          <ul>
-            <li className="px-2">Barbearia</li>
-            <li className="px-2">Consultoria Financeira</li>
-            <li className="px-2">Saúde</li>
-            <li className="px-2">Outros Serviços</li>
-          </ul>
-        </div>
+        {/* Divisor */}
+        <hr className="my-6 border-gray-300 sm:my-8" />
 
-        <div className="text-[12px]">
-          <p>Recursos</p>
-          <p>Perguntas Frequentes</p>
-        </div>
-
-        <div className="text-[12px]">
-          <p>Legal</p>
-          <p>Termos de Uso</p>
-          <p>Política de Privacidade</p>
-          <p>Contato</p>
-        </div>
-      </div>
-      <hr />
-      <div className="flex-collunm text-center">
-        <p className="text-[12px]">
-          © {currentYear} re-exista. Todos os diretiros reservados.
-        </p>
-        <Link href="https://w.app/fypsro" className="mt-2">
-          <p className="text-[12px]">
-            Feito com <em className="text-red-500">♥</em> por Santiago Oliveira
+        {/* Copyright */}
+        <div className="flex flex-col items-center gap-2 px-4 text-center">
+          <p className="text-[10px] text-gray-600 sm:text-xs md:text-sm">
+            © {currentYear} re-exista. Todos os direitos reservados.
           </p>
-        </Link>
+          <p className="text-[10px] text-gray-600 sm:text-xs md:text-sm">
+            Feito com <em className="text-red-500">♥</em> por{" "}
+            <Link
+              href="https://wa.me/5511964771951?text=Ol%C3%A1%2C%20encontrei%20o%20seu%20contato%20no%20site%20re-exista%2C%20gostaria%20de%20um%20or%C3%A7amento!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-words font-medium text-gray-800 transition-colors hover:text-gray-900 underline"
+            >
+              Santiago Oliveira - Desenvolvedor Web / Programador
+            </Link>
+          </p>
+        </div>
       </div>
-    </div>
+    </footer>
   );
 }
 
