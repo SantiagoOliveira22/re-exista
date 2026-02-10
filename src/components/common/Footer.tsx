@@ -14,11 +14,11 @@ async function Footer() {
   const outrosServicosCategory = categories.find(cat => cat.name === "Outros Serviços");
 
   return (
-    <footer className="w-full border-t-4 border-gray-300 bg-gray-100 text-gray-800 shadow-[0_-2px_8px_rgba(0,0,0,0.05)]">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-10 xl:gap-x-12">
+    <footer className="w-full border-t-2 border-gray-300 bg-gray-100 text-gray-800 shadow-[0_-2px_8px_rgba(0,0,0,0.05)]">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-6 xl:gap-x-8">
           {/* Sobre */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <h3 className="text-sm font-semibold sm:text-base">Re-exista</h3>
             <p className="text-xs leading-relaxed text-gray-700 sm:text-sm md:text-base">
               Somos um Portal de Indicação pensado na comunidade e pessoas que
@@ -56,9 +56,9 @@ async function Footer() {
           </div>
 
           {/* Categorias */}
-          <div className="space-y-3 lg:ml-12 xl:ml-16">
+          <div className="space-y-2 lg:ml-8 xl:ml-10">
             <h3 className="text-sm font-semibold sm:text-base">Categorias</h3>
-            <ul className="space-y-2 pl-2 text-xs sm:text-sm">
+            <ul className="space-y-1 pl-2 text-xs sm:text-sm">
               <li>
                 <Link
                   href={barbeariaCategory ? `/professionalList?category=${barbeariaCategory.id}` : "/professionalList"}
@@ -95,9 +95,9 @@ async function Footer() {
           </div>
 
           {/* Recursos */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <h3 className="text-sm font-semibold sm:text-base">Recursos</h3>
-            <ul className="space-y-2 pl-2 text-xs sm:text-sm">
+            <ul className="space-y-1 pl-2 text-xs sm:text-sm">
               <li>
                 <Link
                   href="/perguntas-frequentes"
@@ -110,9 +110,9 @@ async function Footer() {
           </div>
 
           {/* Legal */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <h3 className="text-sm font-semibold sm:text-base">Legal</h3>
-            <ul className="space-y-2 pl-2 text-xs sm:text-sm">
+            <ul className="space-y-1 pl-2 text-xs sm:text-sm">
               <li>
                 <Link
                   href="/termos-de-uso"
@@ -142,10 +142,10 @@ async function Footer() {
         </div>
 
         {/* Divisor */}
-        <hr className="my-6 border-gray-300 sm:my-8" />
+        <hr className="my-3 border-gray-300 sm:my-4" />
 
         {/* Copyright */}
-        <div className="flex flex-col items-center gap-2 px-4 text-center">
+        <div className="flex flex-col items-center gap-1 px-4 text-center">
           <p className="text-[10px] text-gray-600 sm:text-xs md:text-sm">
             © {currentYear} re-exista. Todos os direitos reservados.
           </p>

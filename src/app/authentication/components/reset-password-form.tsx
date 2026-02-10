@@ -4,6 +4,7 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,70 +28,85 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
-const formSchema = z.object({
-  email: z.string().email("E-mail inválido"),
-  password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
-});
+const formSchema = z
+  .object({
+    newPassword: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
+    passwordConfirmation: z.string().min(8, "Confirme a senha"),
+  })
+  .refine((data) => data.newPassword === data.passwordConfirmation, {
+    message: "As senhas não coincidem",
+    path: ["passwordConfirmation"],
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const SignInForm = () => {
+type ResetPasswordFormProps = {
+  token: string | null;
+};
+
+const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error");
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { newPassword: "", passwordConfirmation: "" },
   });
 
+  if (errorParam === "INVALID_TOKEN" || !token) {
+    return (
+      <Card className="w-full border border-gray-200 shadow-sm">
+        <CardHeader className="space-y-1 pb-4">
+          <CardTitle className="text-xl">Link inválido ou expirado</CardTitle>
+          <CardDescription>
+            O link de redefinição de senha não é válido ou já expirou. Solicite
+            um novo link na página &quot;Esqueci a senha&quot;.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link
+            href="/authentication/forgot-password"
+            className="inline-block text-sm font-medium text-gray-800 underline hover:text-gray-600"
+          >
+            Solicitar novo link
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
+
   async function onSubmit(values: FormValues) {
-    await authClient.signIn.email({
-      email: values.email,
-      password: values.password,
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/");
-        },
-        onError: (ctx) => {
-          const err = ctx.error as { code?: string; message?: string };
-          const code = err?.code;
-          if (code === "USER_NOT_FOUND") {
-            toast.error("E-mail não encontrado");
-            return form.setError("email", { message: "E-mail não encontrado" });
-          }
-          if (code === "INVALID_EMAIL_OR_PASSWORD") {
-            toast.error("E-mail ou senha inválidos");
-            form.setError("password", { message: "E-mail ou senha inválidos" });
-            return form.setError("email", { message: "E-mail ou senha inválidos" });
-          }
-          toast.error(err?.message ?? "Erro ao entrar.");
-        },
-      },
+    const { data, error } = await authClient.resetPassword({
+      newPassword: values.newPassword,
+      token,
     });
+
+    if (error) {
+      toast.error(error.message ?? "Erro ao redefinir senha.");
+      return;
+    }
+    toast.success("Senha alterada com sucesso.");
+    router.push("/authentication");
   }
 
   return (
     <Card className="w-full border border-gray-200 shadow-sm">
       <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-xl">Entrar</CardTitle>
-        <CardDescription>Faça login para continuar.</CardDescription>
+        <CardTitle className="text-xl">Redefinir senha</CardTitle>
+        <CardDescription>Digite e confirme sua nova senha.</CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
+              name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>E-mail</FormLabel>
+                  <FormLabel>Nova senha</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="seu@email.com"
-                      {...field}
-                    />
+                    <PasswordInput placeholder="********" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -98,10 +114,10 @@ const SignInForm = () => {
             />
             <FormField
               control={form.control}
-              name="password"
+              name="passwordConfirmation"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Senha</FormLabel>
+                  <FormLabel>Confirmar nova senha</FormLabel>
                   <FormControl>
                     <PasswordInput placeholder="********" {...field} />
                   </FormControl>
@@ -118,13 +134,13 @@ const SignInForm = () => {
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Entrar
+                Redefinir senha
               </Button>
               <Link
-                href="/authentication/forgot-password"
+                href="/authentication"
                 className="text-center text-sm text-gray-600 underline hover:text-gray-900"
               >
-                Esqueci a senha
+                Voltar ao login
               </Link>
             </div>
           </form>
@@ -133,5 +149,5 @@ const SignInForm = () => {
     </Card>
   );
 };
- 
-export default SignInForm;
+
+export default ResetPasswordForm;

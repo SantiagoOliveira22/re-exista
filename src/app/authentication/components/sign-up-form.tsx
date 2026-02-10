@@ -2,6 +2,7 @@
 
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 
@@ -76,13 +78,12 @@ const SignUpForm = () => {
   }
 
   return (
-    <>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Criar Conta</CardTitle>
-          <CardDescription>Preencha os dados abaixo</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <Card className="w-full border border-gray-200 shadow-sm">
+      <CardHeader className="space-y-1 pb-4">
+        <CardTitle className="text-xl">Criar conta</CardTitle>
+        <CardDescription>Preencha os dados abaixo para se cadastrar.</CardDescription>
+      </CardHeader>
+      <CardContent className="pt-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -122,11 +123,7 @@ const SignUpForm = () => {
                   <FormItem>
                     <FormLabel>Senha</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="********"
-                        {...field}
-                      />
+                      <PasswordInput placeholder="********" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -139,24 +136,26 @@ const SignUpForm = () => {
                   <FormItem>
                     <FormLabel>Confirmar Senha</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="********"
-                        {...field}
-                      />
+                      <PasswordInput placeholder="********" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Criar Conta
               </Button>
             </form>
           </Form>
         </CardContent>
       </Card>
-    </>
   );
 };
 
