@@ -4,7 +4,6 @@ import { db } from "@/db";
 import { professionalTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 
 function generateSlug(name: string): string {
@@ -79,5 +78,4 @@ export const createProfessional = async (data: CreateProfessionalData) => {
     description: data.description || null,
   });
 
-  redirect("/professional");
 };

@@ -60,6 +60,7 @@ export const categoryTable = pgTable("category", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().notNull(),
   slug: text().notNull().unique(),
+  iconUrl: text("icon_url"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

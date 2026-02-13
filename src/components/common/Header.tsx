@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MenuIcon } from "lucide-react";
+import { LogOut, MenuIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Sheet,
@@ -13,8 +13,60 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+
+function getInitials(name?: string | null) {
+  if (!name) return "";
+  const parts = name.trim().split(" ").filter(Boolean);
+  if (parts.length === 1) {
+    return parts[0][0]?.toUpperCase() || "";
+  }
+  return (
+    (parts[0][0]?.toUpperCase() || "") +
+    (parts[parts.length - 1][0]?.toUpperCase() || "")
+  );
+}
+
+function UserAvatar({
+  name,
+  size = "md",
+}: {
+  name?: string | null;
+  size?: "sm" | "md";
+}) {
+  const sizeClasses =
+    size === "sm"
+      ? "h-9 w-9 text-xs"
+      : "h-10 w-10 text-sm";
+
+  return (
+    <div
+      className={`flex items-center justify-center rounded-full border-2 border-white/70 bg-white/20 font-bold text-white select-none transition-all hover:border-white hover:bg-white/30 ${sizeClasses}`}
+    >
+      {getInitials(name)}
+    </div>
+  );
+}
 
 function Header() {
+  const { data: session, isPending } = authClient.useSession();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    router.push("/");
+    router.refresh();
+  };
+
   return (
     <header
       className="flex items-center justify-between gap-3 p-3 sm:p-4 md:p-5"
@@ -59,103 +111,210 @@ function Header() {
         >
           Contato
         </Link>
+
+        {/* Avatar com Dropdown - Desktop */}
+        {!isPending && session?.user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white/50">
+                <UserAvatar name={session.user.name} size="md" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-[#CE66FF] bg-[#CE66FF]/10 text-xs font-bold text-[#CE66FF] select-none">
+                    {getInitials(session.user.name)}
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-sm font-semibold leading-tight">
+                      {session.user.name}
+                    </p>
+                    <p className="text-xs leading-tight text-muted-foreground">
+                      {session.user.email}
+                    </p>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleSignOut}
+                variant="destructive"
+                className="cursor-pointer gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sair da conta
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </nav>
 
-      {/* Menu Hambúrguer - visível apenas em telas menores */}
-      <Sheet>
-        <SheetTrigger asChild className="lg:hidden">
-          <Button
-            variant="outline"
-            size="icon"
-            className="border-white/20 bg-white/10 text-white hover:bg-white/20"
+      {/* Área do usuário + Menu Hambúrguer - visível apenas em telas menores */}
+      <div className="flex items-center gap-2 lg:hidden">
+        {/* Avatar com Dropdown - Mobile */}
+        {!isPending && session?.user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white/50">
+                <UserAvatar name={session.user.name} size="sm" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-[#CE66FF] bg-[#CE66FF]/10 text-xs font-bold text-[#CE66FF] select-none">
+                    {getInitials(session.user.name)}
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-sm font-semibold leading-tight">
+                      {session.user.name}
+                    </p>
+                    <p className="text-xs leading-tight text-muted-foreground">
+                      {session.user.email}
+                    </p>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleSignOut}
+                variant="destructive"
+                className="cursor-pointer gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sair da conta
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="border-white/20 bg-white/10 text-white hover:bg-white/20"
+            >
+              <MenuIcon className="h-5 w-5" />
+              <span className="sr-only">Abrir menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent
+            side="right"
+            className="w-[300px] bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 sm:w-[400px]"
           >
-            <MenuIcon className="h-5 w-5" />
-            <span className="sr-only">Abrir menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="right"
-          className="w-[300px] bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 sm:w-[400px]"
-        >
-          <SheetHeader
-            className="border-b pb-4"
-            style={{
-              borderColor: "rgba(70, 113, 254, 0.15)",
-            }}
-          >
-            <SheetTitle
-              className="text-xl font-bold"
+            <SheetHeader
+              className="border-b pb-4"
               style={{
-                color: "#CE66FF",
+                borderColor: "rgba(70, 113, 254, 0.15)",
               }}
             >
-              Menu
-            </SheetTitle>
-          </SheetHeader>
-          <nav className="mt-6 flex flex-col gap-1">
-            <SheetClose asChild>
-              <Link
-                href="/"
-                className="group rounded-lg px-4 py-3 text-base font-medium text-gray-800 transition-all hover:bg-gradient-to-r hover:from-[#4671FE]/15 hover:to-[#CE66FF]/15 hover:shadow-sm"
+              <SheetTitle
+                className="text-xl font-bold"
+                style={{
+                  color: "#CE66FF",
+                }}
               >
-                <span
-                  className="transition-colors group-hover:bg-gradient-to-r group-hover:from-[#4671FE] group-hover:to-[#CE66FF] group-hover:bg-clip-text group-hover:text-transparent"
-                  style={{
-                    background: "transparent",
-                  }}
+                Menu
+              </SheetTitle>
+            </SheetHeader>
+
+            {/* Info do usuário logado - Menu lateral */}
+            {!isPending && session?.user && (
+              <div className="mt-4 flex items-center gap-3 rounded-lg bg-gradient-to-r from-[#4671FE]/10 to-[#CE66FF]/10 px-4 py-3">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border-2 border-[#CE66FF] bg-[#CE66FF]/10 text-sm font-bold text-[#CE66FF] select-none">
+                  {getInitials(session.user.name)}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-gray-800">
+                    {session.user.name}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {session.user.email}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <nav className="mt-6 flex flex-col gap-1">
+              <SheetClose asChild>
+                <Link
+                  href="/"
+                  className="group rounded-lg px-4 py-3 text-base font-medium text-gray-800 transition-all hover:bg-gradient-to-r hover:from-[#4671FE]/15 hover:to-[#CE66FF]/15 hover:shadow-sm"
                 >
-                  Home
-                </span>
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
-              <Link
-                href="/professionalList"
-                className="group rounded-lg px-4 py-3 text-base font-medium text-gray-800 transition-all hover:bg-gradient-to-r hover:from-[#4671FE]/15 hover:to-[#CE66FF]/15 hover:shadow-sm"
-              >
-                <span
-                  className="transition-colors group-hover:bg-gradient-to-r group-hover:from-[#4671FE] group-hover:to-[#CE66FF] group-hover:bg-clip-text group-hover:text-transparent"
-                  style={{
-                    background: "transparent",
-                  }}
+                  <span
+                    className="transition-colors group-hover:bg-gradient-to-r group-hover:from-[#4671FE] group-hover:to-[#CE66FF] group-hover:bg-clip-text group-hover:text-transparent"
+                    style={{
+                      background: "transparent",
+                    }}
+                  >
+                    Home
+                  </span>
+                </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <Link
+                  href="/professionalList"
+                  className="group rounded-lg px-4 py-3 text-base font-medium text-gray-800 transition-all hover:bg-gradient-to-r hover:from-[#4671FE]/15 hover:to-[#CE66FF]/15 hover:shadow-sm"
                 >
-                  Profissionais
-                </span>
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
-              <Link
-                href="/perguntas-frequentes"
-                className="group rounded-lg px-4 py-3 text-base font-medium text-gray-800 transition-all hover:bg-gradient-to-r hover:from-[#4671FE]/15 hover:to-[#CE66FF]/15 hover:shadow-sm"
-              >
-                <span
-                  className="transition-colors group-hover:bg-gradient-to-r group-hover:from-[#4671FE] group-hover:to-[#CE66FF] group-hover:bg-clip-text group-hover:text-transparent"
-                  style={{
-                    background: "transparent",
-                  }}
+                  <span
+                    className="transition-colors group-hover:bg-gradient-to-r group-hover:from-[#4671FE] group-hover:to-[#CE66FF] group-hover:bg-clip-text group-hover:text-transparent"
+                    style={{
+                      background: "transparent",
+                    }}
+                  >
+                    Profissionais
+                  </span>
+                </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <Link
+                  href="/perguntas-frequentes"
+                  className="group rounded-lg px-4 py-3 text-base font-medium text-gray-800 transition-all hover:bg-gradient-to-r hover:from-[#4671FE]/15 hover:to-[#CE66FF]/15 hover:shadow-sm"
                 >
-                  Perguntas Frequentes
-                </span>
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
-              <Link
-                href="/contato"
-                className="group rounded-lg px-4 py-3 text-base font-medium text-gray-800 transition-all hover:bg-gradient-to-r hover:from-[#4671FE]/15 hover:to-[#CE66FF]/15 hover:shadow-sm"
-              >
-                <span
-                  className="transition-colors group-hover:bg-gradient-to-r group-hover:from-[#4671FE] group-hover:to-[#CE66FF] group-hover:bg-clip-text group-hover:text-transparent"
-                  style={{
-                    background: "transparent",
-                  }}
+                  <span
+                    className="transition-colors group-hover:bg-gradient-to-r group-hover:from-[#4671FE] group-hover:to-[#CE66FF] group-hover:bg-clip-text group-hover:text-transparent"
+                    style={{
+                      background: "transparent",
+                    }}
+                  >
+                    Perguntas Frequentes
+                  </span>
+                </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <Link
+                  href="/contato"
+                  className="group rounded-lg px-4 py-3 text-base font-medium text-gray-800 transition-all hover:bg-gradient-to-r hover:from-[#4671FE]/15 hover:to-[#CE66FF]/15 hover:shadow-sm"
                 >
-                  Contato
-                </span>
-              </Link>
-            </SheetClose>
-          </nav>
-        </SheetContent>
-      </Sheet>
+                  <span
+                    className="transition-colors group-hover:bg-gradient-to-r group-hover:from-[#4671FE] group-hover:to-[#CE66FF] group-hover:bg-clip-text group-hover:text-transparent"
+                    style={{
+                      background: "transparent",
+                    }}
+                  >
+                    Contato
+                  </span>
+                </Link>
+              </SheetClose>
+
+              {/* Botão de sair - Menu lateral */}
+              {!isPending && session?.user && (
+                <SheetClose asChild>
+                  <button
+                    onClick={handleSignOut}
+                    className="group mt-4 flex cursor-pointer items-center gap-2 rounded-lg border-t border-gray-200 px-4 py-3 text-base font-medium text-red-500 transition-all hover:bg-red-50"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sair da conta
+                  </button>
+                </SheetClose>
+              )}
+            </nav>
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   );
 }

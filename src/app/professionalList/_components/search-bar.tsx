@@ -44,7 +44,7 @@ export function SearchBar() {
   };
 
   return (
-    <div className="mb-2 relative">
+    <div className="relative">
       <Search 
         className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground transition-colors z-10" 
         onClick={handleSearch}

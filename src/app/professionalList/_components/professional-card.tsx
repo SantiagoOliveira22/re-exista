@@ -1,6 +1,8 @@
 "use client";
 
 import { ProfessionalDetails } from "./professional-details";
+import { AdminEditButton } from "./admin-edit-button";
+import { AdminDeleteButton } from "./admin-delete-button";
 import { MapPin, MessageCircle, Shield, Phone, Mail } from "lucide-react";
 import { professionalTable } from "@/db/schema";
 
@@ -152,12 +154,21 @@ export function ProfessionalCard({ professional }: ProfessionalCardProps) {
         </div>
       )}
       
-      <div className="mt-auto">
+      <div className="mt-auto flex flex-col gap-2">
         <ProfessionalDetails professional={professional}>
           <button className="bg-pink-500 hover:bg-pink-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors w-full">
             Ver Detalhes
           </button>
         </ProfessionalDetails>
+
+        {/* Botões admin - apenas para admin logado */}
+        <div className="flex items-center gap-2">
+          <AdminEditButton professional={professional} />
+          <AdminDeleteButton
+            professionalId={professional.id}
+            professionalName={professional.name}
+          />
+        </div>
       </div>
     </div>
   );

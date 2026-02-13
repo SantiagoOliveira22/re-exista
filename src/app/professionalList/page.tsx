@@ -6,6 +6,7 @@ import React from 'react';
 import { Filters } from './_components/filters';
 import { SearchBar } from './_components/search-bar';
 import { ProfessionalCard } from './_components/professional-card';
+import { AdminCreateButton } from './_components/admin-create-button';
 import { getCategories } from '@/actions/get-categories';
 import { getUniqueStates, getUniqueCities, getUniqueHealthPlans } from '@/actions/get-filter-data';
 
@@ -136,8 +137,15 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
 
           {/* Área Principal: Busca + Profissionais */}
           <div className="flex-1 flex flex-col gap-4">
-            {/* Barra de busca */}
-            <SearchBar />
+            {/* Barra de busca + Botão admin */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+              <div className="flex-1">
+                <SearchBar />
+              </div>
+              <div className="flex-shrink-0">
+                <AdminCreateButton />
+              </div>
+            </div>
             {/* Professional Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {professionals.length === 0 && (

@@ -2,15 +2,16 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { DialogFooter } from "@/components/ui/dialog";
 
 import { createProfessional } from "@/actions/create-professional";
+import { updateProfessional } from "@/actions/update-professional";
 import { getCategories } from "@/actions/get-categories";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,25 +53,49 @@ type Category = {
   slug: string;
 };
 
-const ProfessionalForm = () => {
+export type ProfessionalInitialData = {
+  id: string;
+  name: string;
+  categoryId: string;
+  pronoun?: string | null;
+  specialty?: string | null;
+  address?: string | null;
+  city: string;
+  state?: string | null;
+  format?: string | null;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
+  agreements?: string | null;
+  description?: string | null;
+};
+
+interface ProfessionalFormProps {
+  onSuccess?: () => void;
+  initialData?: ProfessionalInitialData;
+}
+
+const ProfessionalForm = ({ onSuccess, initialData }: ProfessionalFormProps) => {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+
+  const isEditing = !!initialData;
 
   const form = useForm<z.infer<typeof professionalFormSchema>>({
     resolver: zodResolver(professionalFormSchema),
     defaultValues: {
-      name: "",
-      categoryId: "",
-      pronoun: "",
-      specialty: "",
-      address: "",
-      city: "",
-      state: "",
-      format: "",
-      contactPhone: "",
-      contactEmail: "",
-      agreements: "",
-      description: "",
+      name: initialData?.name ?? "",
+      categoryId: initialData?.categoryId ?? "",
+      pronoun: initialData?.pronoun ?? "",
+      specialty: initialData?.specialty ?? "",
+      address: initialData?.address ?? "",
+      city: initialData?.city ?? "",
+      state: initialData?.state ?? "",
+      format: initialData?.format ?? "",
+      contactPhone: initialData?.contactPhone ?? "",
+      contactEmail: initialData?.contactEmail ?? "",
+      agreements: initialData?.agreements ?? "",
+      description: initialData?.description ?? "",
     },
   });
 
@@ -91,28 +116,57 @@ const ProfessionalForm = () => {
 
   const onSubmit = async (data: z.infer<typeof professionalFormSchema>) => {
     try {
-      await createProfessional({
-        name: data.name,
-        categoryId: data.categoryId,
-        pronoun: data.pronoun || undefined,
-        specialty: data.specialty || undefined,
-        address: data.address,
-        city: data.city,
-        state: data.state || undefined,
-        format: data.format || undefined,
-        contactPhone: data.contactPhone || undefined,
-        contactEmail: data.contactEmail || undefined,
-        agreements: data.agreements || undefined,
-        description: data.description || undefined,
-      });
-    } catch (error) {
-      if (isRedirectError(error)) {
-        return;
+      if (isEditing) {
+        await updateProfessional({
+          id: initialData.id,
+          name: data.name,
+          categoryId: data.categoryId,
+          pronoun: data.pronoun || undefined,
+          specialty: data.specialty || undefined,
+          address: data.address,
+          city: data.city,
+          state: data.state || undefined,
+          format: data.format || undefined,
+          contactPhone: data.contactPhone || undefined,
+          contactEmail: data.contactEmail || undefined,
+          agreements: data.agreements || undefined,
+          description: data.description || undefined,
+        });
+        toast.success("Profissional atualizado com sucesso!");
+      } else {
+        await createProfessional({
+          name: data.name,
+          categoryId: data.categoryId,
+          pronoun: data.pronoun || undefined,
+          specialty: data.specialty || undefined,
+          address: data.address,
+          city: data.city,
+          state: data.state || undefined,
+          format: data.format || undefined,
+          contactPhone: data.contactPhone || undefined,
+          contactEmail: data.contactEmail || undefined,
+          agreements: data.agreements || undefined,
+          description: data.description || undefined,
+        });
+        toast.success("Profissional criado com sucesso!");
       }
+      if (onSuccess) {
+        onSuccess();
+      }
+      if (!isEditing) {
+        router.push("/professionalList");
+      }
+      router.refresh();
+    } catch (error) {
       console.error(error);
-      toast.error("Erro ao criar Profissional.");
+      toast.error(
+        isEditing
+          ? "Erro ao atualizar Profissional."
+          : "Erro ao criar Profissional."
+      );
     }
   };
+
   return (
     <>
       <Form {...form}>
@@ -337,7 +391,7 @@ const ProfessionalForm = () => {
               {form.formState.isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Criar profissional
+              {isEditing ? "Salvar alterações" : "Criar profissional"}
             </Button>
           </DialogFooter>
         </form>

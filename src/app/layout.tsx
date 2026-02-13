@@ -32,7 +32,14 @@ export default function RootLayout({
       >
         <Header />
         {children}
-        <Toaster />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            classNames: {
+              success: "!bg-green-100 !text-green-800 !border-green-200",
+            },
+          }}
+        />
         <Footer />
       </body>
     </html>
