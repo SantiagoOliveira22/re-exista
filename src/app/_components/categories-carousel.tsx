@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { AdminEditCategory } from "./admin-edit-category";
 
 const DEFAULT_ICONS: Record<string, string> = {
   Barbearia: "/barber.svg",
@@ -176,7 +177,7 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
             return (
               <div
                 key={category.id}
-                className="flex-shrink-0"
+                className="flex flex-shrink-0 flex-col gap-2"
                 style={{
                   width: `calc(${itemWidthPercent}% - ${(gapPx * (visibleCount - 1)) / visibleCount}px)`,
                 }}
@@ -186,7 +187,6 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
                   className="flex h-24 w-full flex-col items-center justify-center rounded-lg border-2 border-violet-400 p-3 text-center text-[10px] transition-colors hover:border-violet-800 sm:h-28 sm:p-4 sm:text-xs md:h-32 md:text-sm lg:h-[100px]"
                   draggable={false}
                   onClick={(e) => {
-                    // Previne navegação se estiver arrastando
                     if (Math.abs(dragOffset) > 5) e.preventDefault();
                   }}
                 >
@@ -208,6 +208,9 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
                   )}
                   <p className="mt-2">{category.name}</p>
                 </Link>
+                <div className="flex gap-2">
+                  <AdminEditCategory category={category} />
+                </div>
               </div>
             );
           })}
