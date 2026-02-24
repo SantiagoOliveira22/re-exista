@@ -1,8 +1,23 @@
 import crypto from "crypto";
+import readline from "readline";
 
 import { db } from ".";
 import { categoryTable, professionalTable, userTable } from "./schema";
-import { eq } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
+
+function askConfirmation(question: string): Promise<boolean> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.trim().toLowerCase() === "sim");
+    });
+  });
+}
 
 function generateSlug(name: string): string {
   return name
@@ -863,7 +878,31 @@ async function main() {
   console.log("🌱 Iniciando o seeding do banco de dados...");
 
   try {
-    //Limpar dados existentes
+    const [catCount] = await db.select({ total: count() }).from(categoryTable);
+    const [profCount] = await db.select({ total: count() }).from(professionalTable);
+
+    if (catCount.total > 0 || profCount.total > 0) {
+      console.log("");
+      console.log("⚠️  ATENÇÃO: O banco de dados já contém dados!");
+      console.log(`   - ${catCount.total} categoria(s)`);
+      console.log(`   - ${profCount.total} profissional(is)`);
+      console.log("");
+      console.log("   Executar o seed vai APAGAR TODOS os dados acima");
+      console.log("   e substituir pelos dados padrão do seed.");
+      console.log("");
+
+      const confirmed = await askConfirmation(
+        '   Digite "sim" para confirmar a exclusão e repopulação: ',
+      );
+
+      if (!confirmed) {
+        console.log("\n❌ Seed cancelado. Nenhum dado foi alterado.");
+        return;
+      }
+
+      console.log("");
+    }
+
     console.log("🧹 Limpando dados existentes...");
     await db.delete(professionalTable);
     await db.delete(categoryTable);

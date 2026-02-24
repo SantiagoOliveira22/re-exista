@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { LogOut, MenuIcon } from "lucide-react";
+import { LogOut, MenuIcon, Inbox } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Sheet,
@@ -137,6 +137,13 @@ function Header() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem asChild className="cursor-pointer gap-2">
+                <Link href="/admin/mensagens">
+                  <Inbox className="h-4 w-4" />
+                  Painel de Mensagens
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={handleSignOut}
                 variant="destructive"
@@ -176,6 +183,13 @@ function Header() {
                   </div>
                 </div>
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild className="cursor-pointer gap-2">
+                <Link href="/admin/mensagens">
+                  <Inbox className="h-4 w-4" />
+                  Painel de Mensagens
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={handleSignOut}
@@ -299,17 +313,30 @@ function Header() {
                 </Link>
               </SheetClose>
 
-              {/* Botão de sair - Menu lateral */}
+              {/* Links e botões exclusivos do admin - Menu lateral */}
               {!isPending && session?.user && (
-                <SheetClose asChild>
-                  <button
-                    onClick={handleSignOut}
-                    className="group mt-4 flex cursor-pointer items-center gap-2 rounded-lg border-t border-gray-200 px-4 py-3 text-base font-medium text-red-500 transition-all hover:bg-red-50"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Sair da conta
-                  </button>
-                </SheetClose>
+                <>
+                  <SheetClose asChild>
+                    <Link
+                      href="/admin/mensagens"
+                      className="group flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium text-gray-800 transition-all hover:bg-gradient-to-r hover:from-[#4671FE]/15 hover:to-[#CE66FF]/15 hover:shadow-sm"
+                    >
+                      <Inbox className="h-4 w-4 text-[#4671FE]" />
+                      <span className="transition-colors group-hover:bg-gradient-to-r group-hover:from-[#4671FE] group-hover:to-[#CE66FF] group-hover:bg-clip-text group-hover:text-transparent">
+                        Painel de Mensagens
+                      </span>
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <button
+                      onClick={handleSignOut}
+                      className="group mt-2 flex cursor-pointer items-center gap-2 rounded-lg border-t border-gray-200 px-4 py-3 text-base font-medium text-red-500 transition-all hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sair da conta
+                    </button>
+                  </SheetClose>
+                </>
               )}
             </nav>
           </SheetContent>

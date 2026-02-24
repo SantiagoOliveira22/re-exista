@@ -5,7 +5,12 @@ import { AdminCreateCategory } from "./_components/admin-create-category";
 import { CategoriesCarousel } from "./_components/categories-carousel";
 
 export default async function Home() {
-  const categories = await getCategories();
+  const rawCategories = await getCategories();
+  const categories = [...rawCategories].sort((a, b) => {
+    if (a.slug === "outros-servicos") return 1;
+    if (b.slug === "outros-servicos") return -1;
+    return 0;
+  });
 
   return (
     <div className="flex min-h-screen flex-col">

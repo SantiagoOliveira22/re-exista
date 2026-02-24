@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, uuid, boolean } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, timestamp, uuid, boolean } from "drizzle-orm/pg-core";
 
 // export const userTable = pgTable("user", {
 //   id: uuid().primaryKey().defaultRandom(),
@@ -101,3 +101,34 @@ export const professionalRelations = relations(
     }),
   }),
 );
+
+export const faqTable = pgTable("faq", {
+  id: uuid().primaryKey().defaultRandom(),
+  question: text().notNull(),
+  answer: text().notNull(),
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const contactMessageTable = pgTable("contact_message", {
+  id: uuid().primaryKey().defaultRandom(),
+  type: text().notNull(), // "contact" | "suggest" | "self_indicate"
+  status: text().notNull().default("pending"), // "pending" | "approved" | "rejected" | "read"
+
+  senderName: text("sender_name").notNull(),
+  senderEmail: text("sender_email").notNull(),
+  subject: text(),
+  message: text(),
+
+  professionalName: text("professional_name"),
+  professionalCategory: text("professional_category"),
+  professionalCity: text("professional_city"),
+  professionalState: text("professional_state"),
+  professionalPhone: text("professional_phone"),
+  professionalEmail: text("professional_email"),
+  professionalSpecialty: text("professional_specialty"),
+  professionalFormat: text("professional_format"),
+  professionalDescription: text("professional_description"),
+
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

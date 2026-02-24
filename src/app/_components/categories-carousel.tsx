@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { AdminEditCategory } from "./admin-edit-category";
+import { AdminDeleteCategory } from "./admin-delete-category";
 
 const DEFAULT_ICONS: Record<string, string> = {
   Barbearia: "/barber.svg",
@@ -210,6 +211,10 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
                 </Link>
                 <div className="flex gap-2">
                   <AdminEditCategory category={category} />
+                  <AdminDeleteCategory
+                    categoryId={category.id}
+                    categoryName={category.name}
+                  />
                 </div>
               </div>
             );

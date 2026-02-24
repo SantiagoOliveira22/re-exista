@@ -7,6 +7,7 @@ import { Filters } from './_components/filters';
 import { SearchBar } from './_components/search-bar';
 import { ProfessionalCard } from './_components/professional-card';
 import { AdminCreateButton } from './_components/admin-create-button';
+import { AdminMoveButton } from './_components/admin-move-button';
 import { getCategories } from '@/actions/get-categories';
 import { getUniqueStates, getUniqueCities, getUniqueHealthPlans } from '@/actions/get-filter-data';
 
@@ -110,12 +111,12 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
   return (
     <section className="w-full bg-white py-8">
       <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-2xl font-bold text-primary mb-1">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
           Encontre indicações de confiança
         </h1>
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-base text-muted-foreground mb-6">
           Filtre por Estado, Planos de Saúde, Cidade e muito mais<br />
-          Profissionais indicades por pessoas da comunidade LGBTQIAPN+
+          Profissionais indicados por pessoas da comunidade LGBTQIAPN+
         </p>
       
         {/* Layout: Sidebar à esquerda e conteúdo principal à direita */}
@@ -142,7 +143,8 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
               <div className="flex-1">
                 <SearchBar />
               </div>
-              <div className="flex-shrink-0">
+              <div className="flex flex-shrink-0 gap-2">
+                <AdminMoveButton />
                 <AdminCreateButton />
               </div>
             </div>

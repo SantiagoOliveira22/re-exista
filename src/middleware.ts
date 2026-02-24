@@ -82,9 +82,11 @@ export function middleware(request: NextRequest) {
   // ============================================================
   // 3. PROTEÇÃO DAS ROTAS ADMIN (protected)
   //    Exige sessão válida (cookie do better-auth).
-  //    O grupo (protected) mapeia para /professional-form na URL.
   // ============================================================
-  if (pathname.startsWith("/professional-form")) {
+  if (
+    pathname.startsWith("/professional-form") ||
+    pathname.startsWith("/admin")
+  ) {
     const sessionToken =
       request.cookies.get("better-auth.session_token")?.value;
 
@@ -101,5 +103,6 @@ export const config = {
     "/authentication/:path*",
     "/api/auth/sign-up/:path*",
     "/professional-form/:path*",
+    "/admin/:path*",
   ],
 };
