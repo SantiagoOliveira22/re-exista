@@ -33,7 +33,7 @@ function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.senderName.trim() || !form.senderEmail.trim() || !form.message.trim()) {
+    if (!form.senderName.trim() || !form.senderEmail.trim() || !form.subject.trim() || !form.message.trim()) {
       toast.error("Preencha todos os campos obrigatórios!");
       return;
     }
@@ -80,7 +80,7 @@ function ContactForm() {
         </div>
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">Assunto</label>
+        <label className="text-sm font-medium">Assunto *</label>
         <Input
           placeholder="Sobre o que deseja falar?"
           value={form.subject}
@@ -127,7 +127,13 @@ function SuggestForm({ categories }: { categories: Category[] }) {
       !form.senderName.trim() ||
       !form.senderEmail.trim() ||
       !form.professionalName.trim() ||
-      !form.professionalCity.trim()
+      !form.professionalCategory.trim() ||
+      !form.professionalCity.trim() ||
+      !form.professionalState.trim() ||
+      !form.professionalPhone.trim() ||
+      !form.professionalEmail.trim() ||
+      !form.professionalSpecialty.trim() ||
+      !form.message.trim()
     ) {
       toast.error("Preencha todos os campos obrigatórios!");
       return;
@@ -213,7 +219,7 @@ function SuggestForm({ categories }: { categories: Category[] }) {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Categoria</label>
+              <label className="text-sm font-medium">Categoria *</label>
               <Select
                 value={form.professionalCategory}
                 onValueChange={(val) => setForm({ ...form, professionalCategory: val })}
@@ -234,7 +240,7 @@ function SuggestForm({ categories }: { categories: Category[] }) {
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Especialidade</label>
+              <label className="text-sm font-medium">Especialidade *</label>
               <Input
                 placeholder="Ex: Psicologia, Barbearia"
                 value={form.professionalSpecialty}
@@ -243,7 +249,7 @@ function SuggestForm({ categories }: { categories: Category[] }) {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Telefone</label>
+              <label className="text-sm font-medium">Telefone *</label>
               <Input
                 placeholder="(00) 00000-0000"
                 value={form.professionalPhone}
@@ -263,7 +269,7 @@ function SuggestForm({ categories }: { categories: Category[] }) {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Estado</label>
+              <label className="text-sm font-medium">Estado *</label>
               <Input
                 placeholder="Ex: RS, SP"
                 value={form.professionalState}
@@ -273,7 +279,7 @@ function SuggestForm({ categories }: { categories: Category[] }) {
             </div>
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Email do profissional</label>
+            <label className="text-sm font-medium">Email do profissional *</label>
             <Input
               type="email"
               placeholder="profissional@email.com"
@@ -286,7 +292,7 @@ function SuggestForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Por que você indica este profissional?</label>
+        <label className="text-sm font-medium">Por que você indica este profissional? *</label>
         <Textarea
           placeholder="Conte sua experiência com este profissional..."
           value={form.message}
@@ -323,7 +329,13 @@ function SelfIndicateForm({ categories }: { categories: Category[] }) {
     if (
       !form.senderName.trim() ||
       !form.senderEmail.trim() ||
-      !form.professionalCity.trim()
+      !form.professionalCategory.trim() ||
+      !form.professionalCity.trim() ||
+      !form.professionalState.trim() ||
+      !form.professionalPhone.trim() ||
+      !form.professionalSpecialty.trim() ||
+      !form.professionalFormat.trim() ||
+      !form.professionalDescription.trim()
     ) {
       toast.error("Preencha todos os campos obrigatórios!");
       return;
@@ -394,7 +406,7 @@ function SelfIndicateForm({ categories }: { categories: Category[] }) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Categoria</label>
+          <label className="text-sm font-medium">Categoria *</label>
           <Select
             value={form.professionalCategory}
             onValueChange={(val) => setForm({ ...form, professionalCategory: val })}
@@ -413,7 +425,7 @@ function SelfIndicateForm({ categories }: { categories: Category[] }) {
           </Select>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Especialidade</label>
+          <label className="text-sm font-medium">Especialidade *</label>
           <Input
             placeholder="Ex: Psicologia, Barbearia"
             value={form.professionalSpecialty}
@@ -434,7 +446,7 @@ function SelfIndicateForm({ categories }: { categories: Category[] }) {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Estado</label>
+          <label className="text-sm font-medium">Estado *</label>
           <Input
             placeholder="Ex: RS, SP"
             value={form.professionalState}
@@ -446,7 +458,7 @@ function SelfIndicateForm({ categories }: { categories: Category[] }) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Telefone</label>
+          <label className="text-sm font-medium">Telefone *</label>
           <Input
             placeholder="(00) 00000-0000"
             value={form.professionalPhone}
@@ -474,7 +486,7 @@ function SelfIndicateForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Descreva seu serviço</label>
+        <label className="text-sm font-medium">Descreva seu serviço *</label>
         <Textarea
           placeholder="Conte sobre você, seu trabalho e por que deseja fazer parte da re-exista..."
           value={form.professionalDescription}

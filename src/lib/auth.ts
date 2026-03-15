@@ -7,11 +7,8 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
         sendResetPassword: async ({ user, url }) => {
-            // Em produção: integrar com Resend, Nodemailer, etc.
-            if (process.env.NODE_ENV === "development") {
-                console.log("[DEV] Link para redefinir senha:", url);
-            }
-            // void sendEmail({ to: user.email, subject: "Redefinir senha", text: `Acesse: ${url}` });
+            const { sendResetPasswordEmail } = await import("@/lib/resend");
+            await sendResetPasswordEmail(user.email, url);
         },
     }, 
     database: drizzleAdapter(db, {
