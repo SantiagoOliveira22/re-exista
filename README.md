@@ -2,6 +2,18 @@
 
 Portal de indicação de profissionais voltado à comunidade **LGBTQIAPN+**. Permite buscar profissionais por categoria, localização e filtros, com painel administrativo para gestão de conteúdo.
 
+## Produção
+
+| Item | Detalhe |
+|------|---------|
+| **Hospedagem** | [Vercel](https://vercel.com) |
+| **Domínio** | [https://www.re-exista.com](https://www.re-exista.com) |
+| **Redirecionamento** | `https://re-exista.com` → `https://www.re-exista.com` |
+| **Banco de dados** | PostgreSQL ([Neon](https://neon.tech)) |
+| **Deploy** | Automático a cada push na branch `main` |
+
+A aplicação está publicada na Vercel com domínio customizado apontando para o domínio do cliente. O DNS é gerenciado na **HostGator** (registros **A** e **CNAME** conforme instruções da Vercel).
+
 ## Stack
 
 | Camada | Tecnologia |
@@ -9,9 +21,10 @@ Portal de indicação de profissionais voltado à comunidade **LGBTQIAPN+**. Per
 | Frontend | Next.js 15 (App Router), React 19, TypeScript |
 | Estilo | Tailwind CSS 4, shadcn/ui |
 | Backend | Server Actions, API Routes |
-| Banco | PostgreSQL + Drizzle ORM |
+| Banco | PostgreSQL (Neon) + Drizzle ORM |
 | Auth | Better Auth (e-mail/senha) |
 | E-mail | Resend (recuperação de senha) |
+| Hospedagem | Vercel |
 | Validação | Zod + React Hook Form |
 
 ## Pré-requisitos
@@ -23,7 +36,7 @@ Portal de indicação de profissionais voltado à comunidade **LGBTQIAPN+**. Per
 ## Instalação
 
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/SantiagoOliveira22/re-exista.git
 cd re-exista
 npm install
 cp .env.example .env
@@ -67,6 +80,7 @@ Copie `.env.example` para `.env`:
 DATABASE_URL=postgresql://...
 BETTER_AUTH_SECRET=...
 BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
 ADMIN_ACCESS_KEY=...
 RESEND_API_KEY=...
 RESEND_FROM_EMAIL=...
@@ -91,8 +105,14 @@ O acesso administrativo usa **dois níveis**:
 
 ### Entrar como admin
 
+**Produção:**
 ```
-/authentication?key=SUA_ADMIN_ACCESS_KEY
+https://www.re-exista.com/authentication?key=SUA_ADMIN_ACCESS_KEY
+```
+
+**Desenvolvimento local:**
+```
+http://localhost:3000/authentication?key=SUA_ADMIN_ACCESS_KEY
 ```
 
 Após validar a chave, crie a conta e faça login. Funções admin (editar, excluir, criar) só aparecem com **cookie admin + sessão** ativos.
@@ -132,8 +152,9 @@ Após validar a chave, crie a conta e faça login. Funções admin (editar, excl
 
 - CRUD de categorias e profissionais
 - CRUD de perguntas frequentes
-- Gestão de mensagens de contato
+- Gestão de mensagens de contato (`/admin/mensagens`)
 - Mover profissionais entre categorias
+- Exportar profissionais em Excel (`.xlsx`)
 
 ### Categorias
 
@@ -164,20 +185,46 @@ docs/                       # Documentação complementar
 
 Consulte o guia completo em **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 
-Resumo:
+### Ambiente atual (produção)
 
-1. Configure variáveis de ambiente no provedor
-2. `npx drizzle-kit push` no banco de produção
-3. `npm run build` + deploy
+1. Repositório conectado à **Vercel** (deploy automático via GitHub)
+2. Banco PostgreSQL na **Neon** (`DATABASE_URL`)
+3. Domínio customizado **`re-exista.com`** / **`www.re-exista.com`**
+4. DNS configurado na **HostGator** apontando para a Vercel
+5. Variáveis de ambiente configuradas no painel da Vercel
+
+### Variáveis em produção
+
+Em produção, `BETTER_AUTH_URL` e `NEXT_PUBLIC_BETTER_AUTH_URL` devem usar o domínio final:
+
+```env
+BETTER_AUTH_URL=https://www.re-exista.com
+NEXT_PUBLIC_BETTER_AUTH_URL=https://www.re-exista.com
+```
+
+Após alterar variáveis de ambiente na Vercel, faça **Redeploy**.
+
+### Fluxo de deploy
+
+1. Configure variáveis de ambiente no provedor (Vercel)
+2. `npx drizzle-kit push` no banco de produção (primeira vez ou após mudanças no schema)
+3. `git push origin main` — a Vercel faz build e deploy automaticamente
 4. Crie conta admin via link com `ADMIN_ACCESS_KEY`
 5. **Não** rode `seed:reset` em produção com dados reais
+
+### Primeiro acesso admin em produção
+
+```
+https://www.re-exista.com/authentication?key=SUA_ADMIN_ACCESS_KEY
+```
 
 ## Boas práticas
 
 - Faça backup do banco antes de migrations ou seeds destrutivos
 - Mantenha `ADMIN_ACCESS_KEY` e `BETTER_AUTH_SECRET` em local seguro
 - Em produção, configure Resend com domínio verificado
-- Ícones uploadados em `public/icons/` podem ser perdidos em deploy serverless — considere storage externo no futuro
+- Ícones de categorias enviados pelo admin são armazenados como **data URL** no banco em produção (Vercel/serverless); localmente podem ser salvos em `public/icons/`
+- Após mudar domínio ou variáveis de auth, atualize `BETTER_AUTH_URL` e faça redeploy
 
 ## Licença
 
