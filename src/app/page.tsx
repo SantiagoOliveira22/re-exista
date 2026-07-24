@@ -39,7 +39,7 @@ export default async function Home() {
       </div>
 
       {/* Categorias */}
-      <div className="w-full bg-gray-100 pb-6 sm:pb-8">
+      <div className="w-full bg-white pb-6 sm:pb-8">
         <div className="mx-auto max-w-7xl px-4 pt-2 pb-4 sm:px-6 sm:pt-4 sm:pb-6 md:px-8 md:py-6 lg:px-16 lg:py-8">
           <div className="mb-6 flex items-center justify-between sm:mb-8 lg:mb-10">
             <p className="text-lg font-semibold sm:text-xl md:text-2xl">Principais Categorias</p>

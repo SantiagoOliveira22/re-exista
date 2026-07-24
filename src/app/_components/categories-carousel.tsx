@@ -130,7 +130,7 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
     (isDragging ? (dragOffset / (containerRef.current?.clientWidth || 1)) * 100 : 0);
 
   return (
-    <div className="relative">
+    <div className="relative bg-white">
       {/* Seta esquerda */}
       {canScrollLeft && (
         <button
