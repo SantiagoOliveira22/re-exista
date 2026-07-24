@@ -114,7 +114,7 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
 
   if (categories.length === 0) {
     return (
-      <div className="flex justify-center bg-white p-8">
+      <div className="flex justify-center py-6">
         <span className="text-sm text-muted-foreground">
           Nenhuma categoria cadastrada.
         </span>
@@ -130,7 +130,7 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
     (isDragging ? (dragOffset / (containerRef.current?.clientWidth || 1)) * 100 : 0);
 
   return (
-    <div className="relative bg-white px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-8 lg:px-16 lg:py-10">
+    <div className="relative">
       {/* Seta esquerda */}
       {canScrollLeft && (
         <button
