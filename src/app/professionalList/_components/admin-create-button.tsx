@@ -2,6 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,15 +12,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { authClient } from "@/lib/auth-client";
 import ProfessionalForm from "@/app/(protected)/professional-form/_components/form";
 
-export function AdminCreateButton() {
-  const { data: session, isPending } = authClient.useSession();
-  const [open, setOpen] = useState(false);
+interface AdminCreateButtonProps {
+  isAdmin: boolean;
+}
 
-  // Não mostra nada se não está logado
-  if (isPending || !session?.user) return null;
+export function AdminCreateButton({ isAdmin }: AdminCreateButtonProps) {
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  if (!isAdmin) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -36,7 +39,12 @@ export function AdminCreateButton() {
             Preencha as informações do profissional para continuar.
           </DialogDescription>
         </DialogHeader>
-        <ProfessionalForm onSuccess={() => setOpen(false)} />
+        <ProfessionalForm
+          onSuccess={() => {
+            setOpen(false);
+            router.refresh();
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { revalidatePath } from "next/cache";
 
 export const updateCategory = async (formData: FormData) => {
   const session = await auth.api.getSession({
@@ -66,4 +67,7 @@ export const updateCategory = async (formData: FormData) => {
       iconUrl,
     })
     .where(eq(categoryTable.id, id));
+
+  revalidatePath("/", "layout");
+  revalidatePath("/outras-categorias");
 };

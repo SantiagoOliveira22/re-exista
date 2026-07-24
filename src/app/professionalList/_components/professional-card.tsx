@@ -5,12 +5,34 @@ import { AdminEditButton } from "./admin-edit-button";
 import { AdminDeleteButton } from "./admin-delete-button";
 import { MapPin, MessageCircle, Shield, Phone, Mail } from "lucide-react";
 import { professionalTable } from "@/db/schema";
+import type { ProfessionalInitialData } from "@/app/(protected)/professional-form/_components/form";
 
 interface ProfessionalCardProps {
   professional: typeof professionalTable.$inferSelect;
+  isAdmin: boolean;
 }
 
-export function ProfessionalCard({ professional }: ProfessionalCardProps) {
+function toProfessionalInitialData(
+  professional: typeof professionalTable.$inferSelect,
+): ProfessionalInitialData {
+  return {
+    id: professional.id,
+    name: professional.name,
+    categoryId: professional.categoryId,
+    pronoun: professional.pronoun,
+    specialty: professional.specialty,
+    address: professional.address,
+    city: professional.city,
+    state: professional.state,
+    format: professional.format,
+    contactPhone: professional.contactPhone,
+    contactEmail: professional.contactEmail,
+    agreements: professional.agreements,
+    description: professional.description,
+  };
+}
+
+export function ProfessionalCard({ professional, isAdmin }: ProfessionalCardProps) {
   // Gera as iniciais (primeiro nome e primeiro sobrenome) de forma padronizada
   const getInitials = (name?: string | null) => {
     if (!name) return '';
@@ -161,14 +183,19 @@ export function ProfessionalCard({ professional }: ProfessionalCardProps) {
           </button>
         </ProfessionalDetails>
 
-        {/* Botões admin - apenas para admin logado */}
-        <div className="flex items-center gap-2">
-          <AdminEditButton professional={professional} />
-          <AdminDeleteButton
-            professionalId={professional.id}
-            professionalName={professional.name}
-          />
-        </div>
+        {isAdmin && (
+          <div className="flex items-center gap-2">
+            <AdminEditButton
+              isAdmin={isAdmin}
+              professional={toProfessionalInitialData(professional)}
+            />
+            <AdminDeleteButton
+              isAdmin={isAdmin}
+              professionalId={professional.id}
+              professionalName={professional.name}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { revalidatePath } from "next/cache";
 
 function generateSlug(name: string): string {
   return name
@@ -80,4 +81,7 @@ export const createCategory = async (formData: FormData) => {
     slug,
     iconUrl,
   });
+
+  revalidatePath("/", "layout");
+  revalidatePath("/outras-categorias");
 };

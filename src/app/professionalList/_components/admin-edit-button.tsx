@@ -1,7 +1,7 @@
 "use client";
 
-import { Pencil } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -10,19 +10,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { authClient } from "@/lib/auth-client";
 import ProfessionalForm from "@/app/(protected)/professional-form/_components/form";
 import type { ProfessionalInitialData } from "@/app/(protected)/professional-form/_components/form";
 
 interface AdminEditButtonProps {
+  isAdmin: boolean;
   professional: ProfessionalInitialData;
 }
 
-export function AdminEditButton({ professional }: AdminEditButtonProps) {
-  const { data: session, isPending } = authClient.useSession();
+export function AdminEditButton({ isAdmin, professional }: AdminEditButtonProps) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
-  if (isPending || !session?.user) return null;
+  if (!isAdmin) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -43,7 +43,10 @@ export function AdminEditButton({ professional }: AdminEditButtonProps) {
         </DialogHeader>
         <ProfessionalForm
           initialData={professional}
-          onSuccess={() => setOpen(false)}
+          onSuccess={() => {
+            setOpen(false);
+            router.refresh();
+          }}
         />
       </DialogContent>
     </Dialog>

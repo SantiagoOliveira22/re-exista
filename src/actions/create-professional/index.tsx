@@ -2,9 +2,9 @@
 
 import { db } from "@/db";
 import { professionalTable } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/require-admin";
 
 function generateSlug(name: string): string {
   return name
@@ -33,12 +33,7 @@ type CreateProfessionalData = {
 };
 
 export const createProfessional = async (data: CreateProfessionalData) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session?.user) {
-    throw new Error("Usuário não autorizado!");
-  }
+  const session = await requireAdmin();
 
   // Gerar slug único
   let slug = generateSlug(data.name);
@@ -78,4 +73,5 @@ export const createProfessional = async (data: CreateProfessionalData) => {
     description: data.description || null,
   });
 
+  revalidatePath("/professionalList");
 };

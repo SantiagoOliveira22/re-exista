@@ -1,17 +1,43 @@
 import { db } from '@/db';
 import { professionalTable } from '@/db/schema';
-import { count, eq, and, sql, ilike } from 'drizzle-orm';
+import { count, eq, and, sql, ilike, asc } from 'drizzle-orm';
 import Link from 'next/link';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Filters } from './_components/filters';
 import { SearchBar } from './_components/search-bar';
 import { ProfessionalCard } from './_components/professional-card';
 import { AdminCreateButton } from './_components/admin-create-button';
+import { AdminExportButton } from './_components/admin-export-button';
 import { AdminMoveButton } from './_components/admin-move-button';
 import { getCategories } from '@/actions/get-categories';
 import { getUniqueStates, getUniqueCities, getUniqueHealthPlans } from '@/actions/get-filter-data';
+import { isAdminAuthenticated } from '@/lib/is-admin';
+
+export const dynamic = 'force-dynamic';
 
 const ITEMS_PER_PAGE = 6;
+
+function FiltersFallback() {
+  return (
+    <div className="rounded-lg bg-white p-5 shadow-sm">
+      <div className="mb-6 h-5 w-16 animate-pulse rounded bg-gray-200" />
+      <div className="space-y-5">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div key={index} className="space-y-2">
+            <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+            <div className="h-10 animate-pulse rounded-md bg-gray-100" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SearchBarFallback() {
+  return (
+    <div className="h-10 w-full animate-pulse rounded-lg border border-muted bg-gray-100" />
+  );
+}
 
 interface ProfessionalListProps {
   searchParams: Promise<{
@@ -27,6 +53,7 @@ interface ProfessionalListProps {
 
 const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
   const params = await searchParams;
+  const isAdmin = await isAdminAuthenticated();
   const currentPage = Number(params.page) || 1;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
@@ -83,6 +110,7 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
     .select()
     .from(professionalTable)
     .where(whereClause)
+    .orderBy(asc(professionalTable.name))
     .limit(ITEMS_PER_PAGE)
     .offset(offset);
 
@@ -123,17 +151,19 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar de Filtros */}
           <aside className="w-full lg:w-80 flex-shrink-0 bg-gray-100 p-4 rounded-lg">
-            <Filters
-              categories={categories}
-              states={states}
-              cities={cities}
-              healthPlans={healthPlans}
-              selectedCategory={params.category}
-              selectedState={params.state}
-              selectedCity={params.city}
-              selectedHealthPlan={params.healthPlan}
-              onlineOnly={params.online === 'true'}
-            />
+            <Suspense fallback={<FiltersFallback />}>
+              <Filters
+                categories={categories}
+                states={states}
+                cities={cities}
+                healthPlans={healthPlans}
+                selectedCategory={params.category}
+                selectedState={params.state}
+                selectedCity={params.city}
+                selectedHealthPlan={params.healthPlan}
+                onlineOnly={params.online === 'true'}
+              />
+            </Suspense>
           </aside>
 
           {/* Área Principal: Busca + Profissionais */}
@@ -141,11 +171,14 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
             {/* Barra de busca + Botão admin */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
               <div className="flex-1">
-                <SearchBar />
+                <Suspense fallback={<SearchBarFallback />}>
+                  <SearchBar />
+                </Suspense>
               </div>
-              <div className="flex flex-shrink-0 gap-2">
-                <AdminMoveButton />
-                <AdminCreateButton />
+              <div className="flex flex-shrink-0 flex-wrap gap-2">
+                <AdminExportButton isAdmin={isAdmin} />
+                <AdminMoveButton isAdmin={isAdmin} />
+                <AdminCreateButton isAdmin={isAdmin} />
               </div>
             </div>
             {/* Professional Cards */}
@@ -157,7 +190,11 @@ const ProfessionalList = async ({ searchParams }: ProfessionalListProps) => {
             )}
             {professionals.map(
               (professional: typeof professionalTable.$inferSelect) => (
-                <ProfessionalCard key={professional.id} professional={professional} />
+                <ProfessionalCard
+                  key={professional.id}
+                  professional={professional}
+                  isAdmin={isAdmin}
+                />
               )
             )}
             </div>

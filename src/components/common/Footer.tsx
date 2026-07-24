@@ -2,16 +2,12 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getCategories } from "@/actions/get-categories";
+import { splitCategoriesByPrimary } from "@/lib/sort-categories";
 
 async function Footer() {
   const currentYear = new Date().getFullYear();
   const categories = await getCategories();
-  
-  // Buscar IDs das categorias principais
-  const barbeariaCategory = categories.find(cat => cat.name === "Barbearia");
-  const consultoriaFinanceiraCategory = categories.find(cat => cat.name === "Consultoria Financeira");
-  const saudeCategory = categories.find(cat => cat.name === "Saúde");
-  const outrosServicosCategory = categories.find(cat => cat.name === "Outros Serviços");
+  const { primary, secondary } = splitCategoriesByPrimary(categories);
 
   return (
     <footer className="w-full border-t-2 border-gray-300 bg-gray-100 text-gray-800 shadow-[0_-2px_8px_rgba(0,0,0,0.05)]">
@@ -27,7 +23,9 @@ async function Footer() {
             </p>
             <div className="flex gap-3">
               <Link
-                href="/"
+                href="https://www.instagram.com/_re.exista/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="transition-opacity hover:opacity-70"
                 aria-label="Instagram"
               >
@@ -40,7 +38,9 @@ async function Footer() {
                 />
               </Link>
               <Link
-                href="/"
+                href="https://www.linkedin.com/company/re-exista"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="transition-opacity hover:opacity-70"
                 aria-label="LinkedIn"
               >
@@ -59,36 +59,23 @@ async function Footer() {
           <div className="space-y-2 lg:ml-8 xl:ml-10">
             <h3 className="text-sm font-semibold sm:text-base">Categorias</h3>
             <ul className="space-y-1 pl-2 text-xs sm:text-sm">
+              {primary.map((category) => (
+                <li key={category.id}>
+                  <Link
+                    href={`/professionalList?category=${category.id}`}
+                    className="text-gray-700 transition-colors hover:text-gray-900"
+                  >
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
               <li>
                 <Link
-                  href={barbeariaCategory ? `/professionalList?category=${barbeariaCategory.id}` : "/professionalList"}
-                  className="text-gray-700 transition-colors hover:text-gray-900"
+                  href="/outras-categorias"
+                  className="font-medium text-gray-800 transition-colors hover:text-gray-900"
                 >
-                  Barbearia
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={consultoriaFinanceiraCategory ? `/professionalList?category=${consultoriaFinanceiraCategory.id}` : "/professionalList"}
-                  className="text-gray-700 transition-colors hover:text-gray-900"
-                >
-                  Consultoria Financeira
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={saudeCategory ? `/professionalList?category=${saudeCategory.id}` : "/professionalList"}
-                  className="text-gray-700 transition-colors hover:text-gray-900"
-                >
-                  Saúde
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={outrosServicosCategory ? `/professionalList?category=${outrosServicosCategory.id}` : "/professionalList"}
-                  className="text-gray-700 transition-colors hover:text-gray-900"
-                >
-                  Outros Serviços
+                  Outras categorias
+                  {secondary.length > 0 ? ` (${secondary.length})` : ""}
                 </Link>
               </li>
             </ul>

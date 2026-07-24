@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-/**
- * Gera um token a partir da chave admin para armazenar no cookie.
- * Isso evita armazenar a chave diretamente no cookie.
- */
-function generateToken(key: string): string {
-  return Buffer.from(`re-exista-admin:${key}`).toString("base64");
-}
+import { generateAdminAccessToken } from "@/lib/admin-access";
 
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
@@ -27,15 +21,16 @@ export function middleware(request: NextRequest) {
   // 1. PROTEÇÃO DA PÁGINA DE AUTENTICAÇÃO
   //    Só é acessível com ?key=ADMIN_ACCESS_KEY na URL
   //    ou com o cookie admin_access válido.
-  //    EXCEÇÃO: /authentication/reset-password (vem do link do email)
+  //    EXCEÇÃO: rotas públicas do fluxo de recuperação de senha
   // ============================================================
-  if (
-    pathname.startsWith("/authentication") &&
-    !pathname.startsWith("/authentication/reset-password")
-  ) {
+  const isPasswordRecoveryRoute =
+    pathname.startsWith("/authentication/reset-password") ||
+    pathname.startsWith("/authentication/forgot-password");
+
+  if (pathname.startsWith("/authentication") && !isPasswordRecoveryRoute) {
     const keyParam = searchParams.get("key");
     const adminCookie = request.cookies.get("admin_access")?.value;
-    const expectedToken = generateToken(adminAccessKey!);
+    const expectedToken = generateAdminAccessToken(adminAccessKey!);
 
     // Se a chave correta está na URL, seta o cookie e redireciona sem a chave
     // (para não ficar exposta na barra de endereço / histórico)
@@ -69,7 +64,7 @@ export function middleware(request: NextRequest) {
   // ============================================================
   if (pathname.startsWith("/api/auth/sign-up")) {
     const adminCookie = request.cookies.get("admin_access")?.value;
-    const expectedToken = generateToken(adminAccessKey!);
+    const expectedToken = generateAdminAccessToken(adminAccessKey!);
 
     if (!adminCookie || adminCookie !== expectedToken) {
       return NextResponse.json(

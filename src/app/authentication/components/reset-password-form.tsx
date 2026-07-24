@@ -2,9 +2,10 @@
 
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,11 +23,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -45,14 +44,40 @@ type ResetPasswordFormProps = {
 };
 
 const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { newPassword: "", passwordConfirmation: "" },
   });
+
+  if (isSuccess) {
+    return (
+      <Card className="w-full border border-gray-200 shadow-sm">
+        <CardHeader className="space-y-1 pb-4">
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <CheckCircle2 className="h-5 w-5 text-green-600" />
+            Senha alterada
+          </CardTitle>
+          <CardDescription>
+            Sua senha foi redefinida com sucesso. Para entrar no painel
+            administrativo, use novamente o link de acesso fornecido pela
+            equipe.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link
+            href="/"
+            className="inline-block text-sm font-medium text-gray-800 underline hover:text-gray-600"
+          >
+            Voltar para a home
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (errorParam === "INVALID_TOKEN" || !token) {
     return (
@@ -77,7 +102,12 @@ const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
   }
 
   async function onSubmit(values: FormValues) {
-    const { data, error } = await authClient.resetPassword({
+    if (!token) {
+      toast.error("Link inválido ou expirado.");
+      return;
+    }
+
+    const { error } = await authClient.resetPassword({
       newPassword: values.newPassword,
       token,
     });
@@ -86,8 +116,9 @@ const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
       toast.error(error.message ?? "Erro ao redefinir senha.");
       return;
     }
+
     toast.success("Senha alterada com sucesso.");
-    router.push("/authentication");
+    setIsSuccess(true);
   }
 
   return (

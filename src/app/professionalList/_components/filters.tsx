@@ -58,6 +58,11 @@ export function Filters({
     fetchCities();
   }, [selectedState, initialCities]);
 
+  const buildProfessionalListUrl = (params: URLSearchParams) => {
+    const queryString = params.toString();
+    return queryString ? `/professionalList?${queryString}` : "/professionalList";
+  };
+
   const updateFilters = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     
@@ -75,7 +80,8 @@ export function Filters({
       params.delete("city");
     }
 
-    router.push(`/professionalList?${params.toString()}`);
+    router.push(buildProfessionalListUrl(params));
+    router.refresh();
   };
 
   const handleOnlineToggle = (checked: boolean) => {
@@ -89,11 +95,13 @@ export function Filters({
       params.delete("online");
     }
 
-    router.push(`/professionalList?${params.toString()}`);
+    router.push(buildProfessionalListUrl(params));
+    router.refresh();
   };
 
   const clearFilters = () => {
     router.push("/professionalList");
+    router.refresh();
   };
 
   const hasActiveFilters =

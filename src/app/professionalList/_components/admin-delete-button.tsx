@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -15,24 +15,23 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { authClient } from "@/lib/auth-client";
 import { deleteProfessional } from "@/actions/delete-professional";
 
 interface AdminDeleteButtonProps {
+  isAdmin: boolean;
   professionalId: string;
   professionalName: string;
 }
 
 export function AdminDeleteButton({
+  isAdmin,
   professionalId,
   professionalName,
 }: AdminDeleteButtonProps) {
-  const { data: session, isPending: isSessionPending } =
-    authClient.useSession();
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
-  if (isSessionPending || !session?.user) return null;
+  if (!isAdmin) return null;
 
   const handleDelete = async () => {
     setIsDeleting(true);

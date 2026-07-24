@@ -2,17 +2,12 @@
 
 import { db } from "@/db";
 import { professionalTable } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/require-admin";
 
 export const deleteProfessional = async (id: string) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session?.user) {
-    throw new Error("Usuário não autorizado!");
-  }
+  await requireAdmin();
 
   const [existing] = await db
     .select()
@@ -27,4 +22,6 @@ export const deleteProfessional = async (id: string) => {
   await db
     .delete(professionalTable)
     .where(eq(professionalTable.id, id));
+
+  revalidatePath("/professionalList");
 };

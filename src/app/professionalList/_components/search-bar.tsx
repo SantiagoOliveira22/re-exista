@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 export function SearchBar() {
   const router = useRouter();
@@ -11,6 +11,10 @@ export function SearchBar() {
     searchParams.get("search") || ""
   );
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setSearchTerm(searchParams.get("search") || "");
+  }, [searchParams]);
 
   const handleSearch = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -30,6 +34,7 @@ export function SearchBar() {
 
     startTransition(() => {
       router.push(url);
+      router.refresh();
     });
   };
 

@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+.vs/
+bash.exe.stackdump
+public/icons/teste-*
 
 # debug
 npm-debug.log*

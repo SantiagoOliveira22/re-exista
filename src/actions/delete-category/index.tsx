@@ -5,6 +5,7 @@ import { categoryTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 export const deleteCategory = async (id: string) => {
   const session = await auth.api.getSession({
@@ -25,4 +26,8 @@ export const deleteCategory = async (id: string) => {
   }
 
   await db.delete(categoryTable).where(eq(categoryTable.id, id));
+
+  revalidatePath("/", "layout");
+  revalidatePath("/outras-categorias");
+  revalidatePath("/professionalList");
 };

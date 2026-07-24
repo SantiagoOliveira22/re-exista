@@ -51,6 +51,7 @@ const SignInForm = () => {
       fetchOptions: {
         onSuccess: () => {
           router.push("/");
+          router.refresh();
         },
         onError: (ctx) => {
           const err = ctx.error as { code?: string; message?: string };

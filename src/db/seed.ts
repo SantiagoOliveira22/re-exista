@@ -31,6 +31,7 @@ const categories = [
   { name: "Barbearia" },
   { name: "Consultoria Financeira" },
   { name: "Saúde" },
+  { name: "Tatuagem", iconUrl: "/icons/tatuagem-1771893366006.png" },
   { name: "Outros Serviços" },
 ];
 
@@ -811,10 +812,9 @@ const professionals = [
       "Prestação de serviços de consultoria financeira com metodologia própria. Serviços de organização orçamentária, análise financeira e educação para investidores iniciantes. Marca própria: Transformation Financial Plans.",
   },
 
-  // Outros Serviços
   // Tatuagem
   {
-    categoryName: "Outros Serviços",
+    categoryName: "Tatuagem",
     name: "Bruna Negre",
     pronoun: "Ela/dela",
     specialty: "Tatuagem",
@@ -874,20 +874,188 @@ const professionals = [
   },
 ];
 
+const isResetMode = process.argv.includes("--reset");
+
+async function ensureSeedUser() {
+  const testUserId = "seed-user-id";
+  const existingUser = await db
+    .select()
+    .from(userTable)
+    .where(eq(userTable.id, testUserId))
+    .limit(1);
+
+  if (existingUser.length === 0) {
+    console.log("👤 Criando usuário de teste...");
+    await db.insert(userTable).values({
+      id: testUserId,
+      name: "Usuário de Teste (Seed)",
+      email: `seed-${Date.now()}@test.com`,
+      emailVerified: false,
+    });
+    console.log("✅ Usuário de teste criado!");
+  } else {
+    console.log("✅ Usuário de teste já existe!");
+  }
+
+  return testUserId;
+}
+
+async function upsertCategories() {
+  const categoryMap = new Map<string, string>();
+  let categoriesCreated = 0;
+  let categoriesSkipped = 0;
+
+  console.log("📂 Verificando categorias...");
+  for (const categoryData of categories) {
+    const categorySlug = generateSlug(categoryData.name);
+    const existing = await db
+      .select()
+      .from(categoryTable)
+      .where(eq(categoryTable.slug, categorySlug))
+      .limit(1);
+
+    if (existing.length > 0) {
+      categoryMap.set(categoryData.name, existing[0].id);
+      categoriesSkipped++;
+      console.log(`  ⏭️  Categoria já existe: ${categoryData.name}`);
+      continue;
+    }
+
+    const categoryId = crypto.randomUUID();
+    await db.insert(categoryTable).values({
+      id: categoryId,
+      name: categoryData.name,
+      slug: categorySlug,
+      iconUrl: "iconUrl" in categoryData ? categoryData.iconUrl : null,
+    });
+
+    categoryMap.set(categoryData.name, categoryId);
+    categoriesCreated++;
+    console.log(`  📁 Categoria criada: ${categoryData.name}`);
+  }
+
+  return { categoryMap, categoriesCreated, categoriesSkipped };
+}
+
+async function insertMissingProfessionals(
+  categoryMap: Map<string, string>,
+  testUserId: string,
+) {
+  console.log(
+    `📝 Verificando ${professionals.length} profissionais do seed...`,
+  );
+
+  let professionalsCreated = 0;
+  let professionalsSkipped = 0;
+  let professionalsFailed = 0;
+
+  for (const professionalData of professionals) {
+    try {
+      if (!professionalData.name?.trim()) {
+        console.error("❌ Erro: Nome não pode estar vazio para profissional");
+        professionalsFailed++;
+        continue;
+      }
+
+      if (!professionalData.city?.trim()) {
+        console.error(
+          `❌ Erro: Cidade não pode estar vazia para "${professionalData.name}"`,
+        );
+        professionalsFailed++;
+        continue;
+      }
+
+      const professionalSlug = generateSlug(professionalData.name);
+      const existing = await db
+        .select()
+        .from(professionalTable)
+        .where(eq(professionalTable.slug, professionalSlug))
+        .limit(1);
+
+      if (existing.length > 0) {
+        professionalsSkipped++;
+        console.log(`  ⏭️  Profissional já existe: ${professionalData.name}`);
+        continue;
+      }
+
+      const categoryId = categoryMap.get(professionalData.categoryName);
+      if (!categoryId) {
+        console.error(
+          `❌ Erro: Categoria "${professionalData.categoryName}" não encontrada para "${professionalData.name}"`,
+        );
+        professionalsFailed++;
+        continue;
+      }
+
+      console.log(`👤 Criando profissional: ${professionalData.name}`);
+
+      await db.insert(professionalTable).values({
+        id: crypto.randomUUID(),
+        userId: testUserId,
+        name: professionalData.name.trim(),
+        slug: professionalSlug,
+        pronoun: professionalData.pronoun?.trim() || null,
+        specialty: professionalData.specialty?.trim() || null,
+        address: professionalData.address?.trim() || null,
+        city: professionalData.city.trim(),
+        state: professionalData.state?.trim() || null,
+        format: professionalData.format?.trim() || null,
+        contactPhone: professionalData.contactPhone?.trim() || null,
+        contactEmail: professionalData.contactEmail?.trim() || null,
+        agreements:
+          professionalData.agreements &&
+          Array.isArray(professionalData.agreements) &&
+          professionalData.agreements.length > 0
+            ? JSON.stringify(professionalData.agreements)
+            : null,
+        description: professionalData.description?.trim() || null,
+        categoryId,
+      });
+
+      professionalsCreated++;
+      console.log("  ✅ Profissional criado com sucesso!");
+    } catch (error: unknown) {
+      console.error(`❌ Erro ao criar profissional "${professionalData.name}":`);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("   Detalhes:", errorMessage);
+      professionalsFailed++;
+    }
+  }
+
+  return { professionalsCreated, professionalsSkipped, professionalsFailed };
+}
+
+async function resetDatabase() {
+  console.log("🧹 Limpando dados existentes...");
+  await db.delete(professionalTable);
+  await db.delete(categoryTable);
+  console.log("✅ Dados limpos com sucesso!");
+}
+
 async function main() {
   console.log("🌱 Iniciando o seeding do banco de dados...");
 
+  if (isResetMode) {
+    console.log("⚠️  Modo reset ativado (--reset)");
+  } else {
+    console.log("ℹ️  Modo seguro: dados existentes serão preservados.");
+    console.log("   Use --reset apenas se quiser apagar tudo e recriar.");
+  }
+
   try {
     const [catCount] = await db.select({ total: count() }).from(categoryTable);
-    const [profCount] = await db.select({ total: count() }).from(professionalTable);
+    const [profCount] = await db
+      .select({ total: count() })
+      .from(professionalTable);
 
-    if (catCount.total > 0 || profCount.total > 0) {
+    if (isResetMode && (catCount.total > 0 || profCount.total > 0)) {
       console.log("");
       console.log("⚠️  ATENÇÃO: O banco de dados já contém dados!");
       console.log(`   - ${catCount.total} categoria(s)`);
       console.log(`   - ${profCount.total} profissional(is)`);
       console.log("");
-      console.log("   Executar o seed vai APAGAR TODOS os dados acima");
+      console.log("   O modo --reset vai APAGAR TODOS os dados acima");
       console.log("   e substituir pelos dados padrão do seed.");
       console.log("");
 
@@ -901,160 +1069,24 @@ async function main() {
       }
 
       console.log("");
+      await resetDatabase();
     }
 
-    console.log("🧹 Limpando dados existentes...");
-    await db.delete(professionalTable);
-    await db.delete(categoryTable);
-    console.log("✅ Dados limpos com sucesso!");
-
-    // Criar ou obter usuário de teste para os profissionais
-    const testUserId = "seed-user-id";
-    const existingUser = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.id, testUserId))
-      .limit(1);
-
-    if (existingUser.length === 0) {
-      console.log("👤 Criando usuário de teste...");
-      await db.insert(userTable).values({
-        id: testUserId,
-        name: "Usuário de Teste (Seed)",
-        email: `seed-${Date.now()}@test.com`,
-        emailVerified: false,
-      });
-      console.log("✅ Usuário de teste criado!");
-    } else {
-      console.log("✅ Usuário de teste já existe!");
-    }
-
-    // Inserir categorias primeiro
-    const categoryMap = new Map<string, string>();
-
-    console.log("📂 Criando categorias...");
-    for (const categoryData of categories) {
-      const categoryId = crypto.randomUUID();
-      const categorySlug = generateSlug(categoryData.name);
-
-      console.log(`  📁 Criando categoria: ${categoryData.name}`);
-
-      await db.insert(categoryTable).values({
-        id: categoryId,
-        name: categoryData.name,
-        slug: categorySlug,
-      });
-
-      categoryMap.set(categoryData.name, categoryId);
-    }
-
-    // Inserir profissionais
-    console.log(
-      `📝 Iniciando inserção de ${professionals.length} profissionais...`,
-    );
-    let professionalsCreated = 0;
-    let professionalsFailed = 0;
-
-    for (const professionalData of professionals) {
-      try {
-        // Validar campos obrigatórios
-        if (!professionalData.name || !professionalData.name.trim()) {
-          console.error(`❌ Erro: Nome não pode estar vazio para profissional`);
-          professionalsFailed++;
-          continue;
-        }
-
-        if (!professionalData.city || !professionalData.city.trim()) {
-          console.error(
-            `❌ Erro: Cidade não pode estar vazia para "${professionalData.name}"`,
-          );
-          professionalsFailed++;
-          continue;
-        }
-
-        const professionalId = crypto.randomUUID();
-        const professionalSlug = generateSlug(professionalData.name);
-        const categoryId = categoryMap.get(professionalData.categoryName);
-
-        if (!categoryId) {
-          console.error(
-            `❌ Erro: Categoria "${professionalData.categoryName}" não encontrada para "${professionalData.name}"`,
-          );
-          professionalsFailed++;
-          continue;
-        }
-
-        console.log(`👤 Criando profissional: ${professionalData.name}`);
-
-        await db.insert(professionalTable).values({
-          id: professionalId,
-          userId: testUserId,
-          name: professionalData.name.trim(),
-          slug: professionalSlug,
-          pronoun:
-            professionalData.pronoun && professionalData.pronoun.trim()
-              ? professionalData.pronoun.trim()
-              : null,
-          specialty:
-            professionalData.specialty && professionalData.specialty.trim()
-              ? professionalData.specialty.trim()
-              : null,
-          address:
-            professionalData.address && professionalData.address.trim()
-              ? professionalData.address.trim()
-              : null,
-          city: professionalData.city.trim(),
-          state:
-            professionalData.state && professionalData.state.trim()
-              ? professionalData.state.trim()
-              : null,
-          format:
-            professionalData.format && professionalData.format.trim()
-              ? professionalData.format.trim()
-              : null,
-          contactPhone:
-            professionalData.contactPhone &&
-            professionalData.contactPhone.trim()
-              ? professionalData.contactPhone.trim()
-              : null,
-          contactEmail:
-            professionalData.contactEmail &&
-            professionalData.contactEmail.trim()
-              ? professionalData.contactEmail.trim()
-              : null,
-          agreements:
-            professionalData.agreements &&
-            Array.isArray(professionalData.agreements) &&
-            professionalData.agreements.length > 0
-              ? JSON.stringify(professionalData.agreements)
-              : null,
-          description:
-            professionalData.description && professionalData.description.trim()
-              ? professionalData.description.trim()
-              : null,
-          categoryId: categoryId,
-        });
-
-        professionalsCreated++;
-        console.log(`  ✅ Profissional criado com sucesso!`);
-      } catch (error: unknown) {
-        console.error(
-          `❌ Erro ao criar profissional "${professionalData.name}":`,
-        );
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        console.error(`   Detalhes:`, errorMessage);
-        if (error && typeof error === 'object' && 'code' in error) {
-          console.error(`   Código do erro:`, error.code);
-        }
-        professionalsFailed++;
-        // Continue com o próximo profissional ao invés de parar tudo
-      }
-    }
+    const testUserId = await ensureSeedUser();
+    const { categoryMap, categoriesCreated, categoriesSkipped } =
+      await upsertCategories();
+    const {
+      professionalsCreated,
+      professionalsSkipped,
+      professionalsFailed,
+    } = await insertMissingProfessionals(categoryMap, testUserId);
 
     console.log("\n✅ Seeding concluído!");
     console.log(
-      `📊 Resumo: ${categories.length} categorias criadas, ${professionalsCreated} profissionais criados, ${professionalsFailed} falharam.`,
+      `📊 Categorias: ${categoriesCreated} criada(s), ${categoriesSkipped} já existente(s).`,
+    );
+    console.log(
+      `📊 Profissionais: ${professionalsCreated} criado(s), ${professionalsSkipped} já existente(s), ${professionalsFailed} falharam.`,
     );
 
     if (professionalsFailed > 0) {

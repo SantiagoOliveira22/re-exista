@@ -21,15 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { authClient } from "@/lib/auth-client";
 import { moveProfessionals } from "@/actions/move-professionals";
 
 type Category = { id: string; name: string; slug: string };
 type Professional = { id: string; name: string };
 
-export function AdminMoveButton() {
-  const { data: session, isPending: isSessionPending } =
-    authClient.useSession();
+interface AdminMoveButtonProps {
+  isAdmin: boolean;
+}
+
+export function AdminMoveButton({ isAdmin }: AdminMoveButtonProps) {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [sourceCategoryId, setSourceCategoryId] = useState("");
@@ -160,7 +161,7 @@ export function AdminMoveButton() {
     }
   };
 
-  if (isSessionPending || !session?.user) return null;
+  if (!isAdmin) return null;
 
   const targetCategories = categories.filter(
     (c) => c.id !== sourceCategoryId,

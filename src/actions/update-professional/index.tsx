@@ -2,9 +2,9 @@
 
 import { db } from "@/db";
 import { professionalTable } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/require-admin";
 
 type UpdateProfessionalData = {
   id: string;
@@ -23,12 +23,7 @@ type UpdateProfessionalData = {
 };
 
 export const updateProfessional = async (data: UpdateProfessionalData) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session?.user) {
-    throw new Error("Usuário não autorizado!");
-  }
+  await requireAdmin();
 
   // Verificar se o profissional existe
   const [existing] = await db
@@ -59,4 +54,6 @@ export const updateProfessional = async (data: UpdateProfessionalData) => {
       description: data.description || null,
     })
     .where(eq(professionalTable.id, data.id));
+
+  revalidatePath("/professionalList");
 };

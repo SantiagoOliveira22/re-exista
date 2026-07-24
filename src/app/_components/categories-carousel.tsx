@@ -7,16 +7,7 @@ import Link from "next/link";
 import { AdminEditCategory } from "./admin-edit-category";
 import { AdminDeleteCategory } from "./admin-delete-category";
 
-const DEFAULT_ICONS: Record<string, string> = {
-  Barbearia: "/barber.svg",
-  "Consultoria Financeira": "/financial.svg",
-  Saúde: "/health.svg",
-  "Outros Serviços": "/services.svg",
-};
-
-function getCategoryIcon(name: string, iconUrl: string | null): string | null {
-  return iconUrl || DEFAULT_ICONS[name] || null;
-}
+import { getCategoryIcon } from "@/lib/category-icons";
 
 type Category = {
   id: string;
@@ -154,7 +145,11 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
       {/* Container do carrossel */}
       <div
         ref={containerRef}
-        className="overflow-hidden"
+        className={[
+          "overflow-hidden py-1",
+          canScrollLeft ? "pl-11 sm:pl-12 lg:pl-14" : "pl-0.5",
+          canScrollRight ? "pr-11 sm:pr-12 lg:pr-14" : "pr-1",
+        ].join(" ")}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
@@ -178,14 +173,14 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
             return (
               <div
                 key={category.id}
-                className="flex flex-shrink-0 flex-col gap-2"
+                className="box-border flex flex-shrink-0 flex-col gap-2 px-0.5"
                 style={{
                   width: `calc(${itemWidthPercent}% - ${(gapPx * (visibleCount - 1)) / visibleCount}px)`,
                 }}
               >
                 <Link
                   href={`/professionalList?category=${category.id}`}
-                  className="flex h-24 w-full flex-col items-center justify-center rounded-lg border-2 border-violet-400 p-3 text-center text-[10px] transition-colors hover:border-violet-800 sm:h-28 sm:p-4 sm:text-xs md:h-32 md:text-sm lg:h-[100px]"
+                  className="box-border flex h-24 w-full flex-col items-center justify-center rounded-lg border-2 border-violet-400 p-3 text-center text-[10px] transition-colors hover:border-violet-800 sm:h-28 sm:p-4 sm:text-xs md:h-32 md:text-sm lg:h-[100px]"
                   draggable={false}
                   onClick={(e) => {
                     if (Math.abs(dragOffset) > 5) e.preventDefault();

@@ -4,24 +4,29 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 
 export const auth = betterAuth({
-    emailAndPassword: {
-        enabled: true,
-        sendResetPassword: async ({ user, url }) => {
-            const { sendResetPasswordEmail } = await import("@/lib/resend");
-            await sendResetPasswordEmail(user.email, url);
-        },
-    }, 
-    database: drizzleAdapter(db, {
-        provider: "pg",
-        schema,
-    }),
-    user: {
-        modelName: "userTable",
+  baseURL: process.env.BETTER_AUTH_URL,
+  secret: process.env.BETTER_AUTH_SECRET,
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      const { sendResetPasswordEmail } = await import("@/lib/resend");
+      await sendResetPasswordEmail(user.email, url);
     },
-    session: {
-        modelName: "sessionTable",
-    },
-    account: {
-        modelName: "accountTable",
-    }
+  },
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema,
+  }),
+  user: {
+    modelName: "userTable",
+  },
+  session: {
+    modelName: "sessionTable",
+  },
+  account: {
+    modelName: "accountTable",
+  },
+  verification: {
+    modelName: "verificationTable",
+  },
 });

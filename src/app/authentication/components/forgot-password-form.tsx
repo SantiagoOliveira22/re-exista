@@ -43,19 +43,32 @@ const ForgotPasswordForm = () => {
         ? `${window.location.origin}/authentication/reset-password`
         : "/authentication/reset-password";
 
-    const { data, error } = await authClient.requestPasswordReset({
-      email: values.email,
-      redirectTo,
-    });
+    try {
+      const { error } = await authClient.requestPasswordReset({
+        email: values.email,
+        redirectTo,
+      });
 
-    if (error) {
-      toast.error(error.message ?? "Erro ao enviar e-mail.");
-      return;
+      if (error) {
+        toast.error(error.message ?? "Erro ao enviar e-mail.");
+        return;
+      }
+
+      const isLocal =
+        typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1");
+
+      toast.success(
+        isLocal
+          ? "Solicitação enviada. Se o e-mail não chegar, confira o link no terminal do servidor."
+          : "Se esse e-mail estiver cadastrado, você receberá um link para redefinir a senha.",
+      );
+
+      form.reset();
+    } catch {
+      toast.error("Erro ao enviar e-mail de recuperação.");
     }
-    toast.success(
-      "Se esse e-mail estiver cadastrado, você receberá um link para redefinir a senha."
-    );
-    form.reset();
   }
 
   return (
