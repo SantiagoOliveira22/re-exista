@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
 
 import { generateAdminAccessToken } from "@/lib/admin-access";
 
@@ -82,8 +83,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/professional-form") ||
     pathname.startsWith("/admin")
   ) {
-    const sessionToken =
-      request.cookies.get("better-auth.session_token")?.value;
+    const sessionToken = getSessionCookie(request);
 
     if (!sessionToken) {
       return NextResponse.redirect(new URL("/", request.url));
