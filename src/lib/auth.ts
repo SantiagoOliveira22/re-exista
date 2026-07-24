@@ -6,6 +6,13 @@ import * as schema from "@/db/schema";
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL,
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+    "https://re-exista.com",
+    "https://www.re-exista.com",
+    "https://re-exista.vercel.app",
+  ].filter((origin): origin is string => Boolean(origin)),
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
