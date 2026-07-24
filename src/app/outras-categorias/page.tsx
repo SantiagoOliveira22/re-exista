@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getSecondaryCategories } from "@/actions/get-categories";
+import { CategoryIconImage } from "@/components/common/category-icon-image";
 import { getCategoryIcon } from "@/lib/category-icons";
 
 export default async function OutrasCategoriasPage() {
@@ -45,7 +45,7 @@ export default async function OutrasCategoriasPage() {
                   className="box-border flex min-h-28 flex-col items-center justify-center rounded-lg border-2 border-violet-400 p-4 text-center text-xs transition-colors hover:border-violet-800 sm:min-h-32 sm:text-sm"
                 >
                   {icon ? (
-                    <Image
+                    <CategoryIconImage
                       src={icon}
                       alt={`Ícone ${category.name}`}
                       width={40}

@@ -76,7 +76,9 @@ export function AdminCreateCategory() {
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Erro ao criar categoria.");
+      const message =
+        error instanceof Error ? error.message : "Erro ao criar categoria.";
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

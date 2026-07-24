@@ -2,10 +2,10 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { AdminEditCategory } from "./admin-edit-category";
 import { AdminDeleteCategory } from "./admin-delete-category";
+import { CategoryIconImage } from "@/components/common/category-icon-image";
 
 import { getCategoryIcon } from "@/lib/category-icons";
 
@@ -187,13 +187,12 @@ export function CategoriesCarousel({ categories }: CategoriesCarouselProps) {
                   }}
                 >
                   {icon ? (
-                    <Image
+                    <CategoryIconImage
                       src={icon}
                       alt={`Ícone ${category.name}`}
                       width={40}
                       height={40}
                       className="mx-auto h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10"
-                      draggable={false}
                     />
                   ) : (
                     <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-600 sm:h-9 sm:w-9 md:h-10 md:w-10">

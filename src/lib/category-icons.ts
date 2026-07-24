@@ -11,3 +11,7 @@ export function getCategoryIcon(
 ): string | null {
   return iconUrl || DEFAULT_ICONS[name] || null;
 }
+
+export function isCategoryIconDataUrl(iconUrl: string): boolean {
+  return iconUrl.startsWith("data:");
+}

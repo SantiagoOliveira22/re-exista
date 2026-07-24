@@ -2,20 +2,14 @@
 
 import { db } from "@/db";
 import { categoryTable } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { revalidatePath } from "next/cache";
 
+import { requireAdmin } from "@/lib/require-admin";
+import { saveCategoryIcon } from "@/lib/save-category-icon";
+
 export const updateCategory = async (formData: FormData) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session?.user) {
-    throw new Error("Usuário não autorizado!");
-  }
+  await requireAdmin();
 
   const id = formData.get("id") as string;
   const name = formData.get("name") as string;
@@ -42,20 +36,8 @@ export const updateCategory = async (formData: FormData) => {
 
   let iconUrl: string | null = existing.iconUrl;
 
-  // Se enviou novo ícone, salva e atualiza
   if (iconFile && iconFile.size > 0) {
-    const bytes = await iconFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const iconsDir = path.join(process.cwd(), "public", "icons");
-    await mkdir(iconsDir, { recursive: true });
-
-    const ext = iconFile.name.split(".").pop() || "svg";
-    const fileName = `${existing.slug}-${Date.now()}.${ext}`;
-    const filePath = path.join(iconsDir, fileName);
-
-    await writeFile(filePath, buffer);
-    iconUrl = `/icons/${fileName}`;
+    iconUrl = await saveCategoryIcon(iconFile, existing.slug);
   } else if (!keepCurrentIcon) {
     iconUrl = null;
   }
